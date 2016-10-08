@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">Suporte CEFD</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Senha"</string>
+    <string name="action_sign_in">Entrar</string>
+    <string name="action_sign_in_short">Entrar</string>
+    <string name="error_invalid_email">Email inválido</string>
+    <string name="error_invalid_password">Essa senha é muito curta</string>
+    <string name="error_incorrect_password">Senha incorreta</string>
+    <string name="error_field_required">Esse campo é obrigatório</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+    <!--tipos de equipamento -->
+    <string name="t_desktop">"Desktop"</string>
+    <string name="t_notebook">"Notebook"</string>
+    <string name="t_monitor">"Monitor"</string>
+    <string name="t_impressora">"Impressora"</string>
+    <string name="t_network">"Rede"</string>
+    <string name="t_outro">"Outro"</string>
+
+    <!-- Menus-->
+    <string name="title_activity_menu">Menu Principal</string>
+    <string name="t_cadastrar_servico">Cadastrar Serviço</string>
+    <string name="t_listar_servico">Listar Serviços</string>
+
+    <!-- Texts e labels -->
+    <string name="t_patrimonio">"Patrimônio"</string>
+    <string name="t_local">"Local"</string>
+    <string name="t_responsavel">"Responsável"</string>
+    <string name="t_telefone">"Telefone"</string>
+    <string name="l_tipo">Tipo</string>
+    <string name="t_cadastrar">Cadastrar</string>
+    <string name="t_descricao">Descrição do Problema</string>
+    <string name="t_empty">Nenhum Serviço Cadastrado</string>
+    <string name="t_email">"Email"</string>
+    <string name="closeservice">Fechar Serviço</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
