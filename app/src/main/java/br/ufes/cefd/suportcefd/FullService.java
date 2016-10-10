@@ -3,11 +3,15 @@ package br.ufes.cefd.suportcefd;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 
@@ -17,6 +21,14 @@ import br.ufes.cefd.suportcefd.utils.Util;
  * Created by pgrippa on 17/09/16.
  */
 public class FullService extends AppCompatActivity {
+
+    private EditText l;
+    private EditText r;
+    private EditText d;
+    private EditText e;
+    private EditText t;
+    private Button edit;
+    private boolean editing = false;
 
 
     @Override
@@ -48,19 +60,19 @@ public class FullService extends AppCompatActivity {
         TextView p = (TextView) findViewById(R.id.l_fpatrimonio);
         p.setText(patrimonio);
 
-        final EditText l = (EditText) findViewById(R.id.txlocal);
+        l = (EditText) findViewById(R.id.txlocal);
         l.setText(local);
 
-        final EditText r = (EditText) findViewById(R.id.txresponsavel);
+        r = (EditText) findViewById(R.id.txresponsavel);
         r.setText(responsavel);
 
-        final EditText d = (EditText) findViewById(R.id.txdescricao);
+        d = (EditText) findViewById(R.id.txdescricao);
         d.setText(descricao);
 
-        final EditText e = (EditText) findViewById(R.id.txemail1);
+        e = (EditText) findViewById(R.id.txemail1);
         e.setText(email);
 
-        final EditText t = (EditText) findViewById(R.id.txtel);
+        t = (EditText) findViewById(R.id.txtel);
         t.setText(telefone);
 
         TextView dt = (TextView) findViewById(R.id.t_data);
@@ -77,18 +89,49 @@ public class FullService extends AppCompatActivity {
             }
         });
 
-        Button edit = (Button) findViewById(R.id.editbutton);
+        edit = (Button) findViewById(R.id.editbutton);
 
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                l.setEnabled(true);
-                r.setEnabled(true);
-                d.setEnabled(true);
-                e.setEnabled(true);
-                t.setEnabled(true);
+                setFieldsEnable(!editing);
             }
         });
     }
 
+    private void setFieldsEnable(boolean value){
+        l.setEnabled(value);
+        r.setEnabled(value);
+        d.setEnabled(value);
+        e.setEnabled(value);
+        t.setEnabled(value);
+        if(value){
+            edit.setText("Salvar");
+        }else{
+            edit.setText("Editar");
+        }
+
+        editing = value;
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_full_service, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // action with ID action_refresh was selected
+            case R.id.action_edit:
+                setFieldsEnable(!editing);
+                break;
+
+            default:
+                break;
+        }
+
+        return true;
+    }
 }
