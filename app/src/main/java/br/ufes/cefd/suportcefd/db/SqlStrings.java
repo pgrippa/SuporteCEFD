@@ -7,8 +7,6 @@ public class SqlStrings {
 
     public static final String TEXT_TYPE = " TEXT";
 
-    public static final String DATE_TYPE = " DATE";
-
     public static final String COMMA_SEP = ",";
 
     public static final String SQL_CREATE_SERVICE_ENTRIES =
@@ -25,7 +23,20 @@ public class SqlStrings {
                     Contract.ItemService.COLUMN_RESLEASEDATE + TEXT_TYPE +
              " )";
 
-    public static final String SQL_DELETE_ENTRIES =
+    public static final String SQL_CREATE_PERSON_ENTRIES =
+            "CREATE TABLE " + Contract.ItemPerson.TABLE_NAME + " (" +
+                    Contract.ItemPerson._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                    Contract.ItemPerson.COLUMN_NAME + TEXT_TYPE + COMMA_SEP +
+                    Contract.ItemPerson.COLUMN_TELEPHONE + TEXT_TYPE + COMMA_SEP +
+                    Contract.ItemPerson.COLUMN_EMAIL + TEXT_TYPE + COMMA_SEP +
+                    Contract.ItemPerson.COLUMN_PASSWORD + TEXT_TYPE +
+                    " )";
+
+    public static final String SQL_DELETE_SERVICE_ENTRIES =
             "DROP TABLE IF EXISTS " + Contract.ItemService.TABLE_NAME;
 
+    public static final String SQL_DELETE_PERSON_ENTRIES =
+            "DROP TABLE IF EXISTS " + Contract.ItemPerson.TABLE_NAME;
+
 }
+

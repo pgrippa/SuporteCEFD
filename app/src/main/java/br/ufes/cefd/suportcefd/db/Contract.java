@@ -24,10 +24,11 @@ public final class Contract {
 
     }
 
-    public static abstract class ItemUser implements BaseColumns {
-        public static final String TABLE_NAME = "User";
+    public static abstract class ItemPerson implements BaseColumns {
+        public static final String TABLE_NAME = "Person";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_TELEPHONE = "telephone";
         public static final String COLUMN_EMAIL = "email";
+        public static final String COLUMN_PASSWORD = "password";
     }
 }
