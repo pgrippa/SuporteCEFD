@@ -36,17 +36,19 @@ public class FullService extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullservice);
 
-        String patrimonio = this.getIntent().getExtras().getString("patrimonio");
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarfull);
+
+        int id = this.getIntent().getExtras().getInt("id");
+
 
 
         if(toolbar != null){
-            toolbar.setTitle("Chamado nº "+patrimonio);
+            toolbar.setTitle("Chamado nº "+String.format("%07d", id));
             setSupportActionBar(toolbar);
-        }else{
-            System.out.println("ToolBar NULL!");
         }
 
+        String patrimonio = this.getIntent().getExtras().getString("patrimonio");
         String local = this.getIntent().getExtras().getString("local");
         String responsavel = this.getIntent().getExtras().getString("responsavel");
         String descricao = this.getIntent().getExtras().getString("descricao");

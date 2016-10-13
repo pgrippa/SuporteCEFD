@@ -1,4 +1,4 @@
-package br.ufes.cefd.suportcefd.model;
+package br.ufes.cefd.suportcefd.domain;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -20,7 +20,7 @@ public class Service {
     private Date release;
     private String releaseDate;
     private String telephone;
-    private long id = 0;
+    private long id;
 
     public Service(String p, String l, String t, String r, String d, String e, String tel){
         this.setPatrimony(p);
@@ -31,10 +31,10 @@ public class Service {
         this.setEmail(e);
         this.setTelephone(tel);
         this.setEntry(Calendar.getInstance().getTime());
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy HH:mm");
         this.setEntryDate(dateFormat.format(getEntry()));
         this.setRelease(null);
-        this.setId(++id);
     }
 
 

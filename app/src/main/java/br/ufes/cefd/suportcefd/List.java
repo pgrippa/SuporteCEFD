@@ -1,9 +1,9 @@
 package br.ufes.cefd.suportcefd;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -12,31 +12,30 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-
-import br.ufes.cefd.suportcefd.model.Service;
-import br.ufes.cefd.suportcefd.model.ServiceAdapter;
+import br.ufes.cefd.suportcefd.db.ServiceDAO;
+import br.ufes.cefd.suportcefd.utils.ServiceCursorAdapter;
 import br.ufes.cefd.suportcefd.utils.DividerItemDecoration;
 import br.ufes.cefd.suportcefd.utils.RecyclerTouchListener;
-import br.ufes.cefd.suportcefd.utils.Util;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class List extends AppCompatActivity {
     private RecyclerView recyclerView;
-    ArrayList<Service> serviceList;
+    //ArrayList<Service> serviceList;
+    Cursor cursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listar);
 
-        serviceList = Util.readFromFile(this, "services.csv");
+        //serviceList = Util.readFromFile(this, "services.csv");
+        ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
+        serviceDAO.open("read");
+
+        cursor = serviceDAO.getServices();
 
         TextView empty = (TextView) findViewById(R.id.t_empty);
-        if(serviceList.isEmpty()){
+        if(cursor.getCount()==0){
             empty.setText(getString(R.string.t_empty));
         }else{
             empty.setText("");
@@ -49,8 +48,13 @@ public class List extends AppCompatActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setItemAnimator(new SlideInUpAnimator());
 
-        ServiceAdapter adapter = new ServiceAdapter(this, serviceList);
-        recyclerView.setAdapter(adapter);
+
+
+
+
+        ServiceCursorAdapter cursorAdapter = new ServiceCursorAdapter(this, cursor);
+        //ServiceAdapter adapter = new ServiceAdapter(this, serviceList);
+        recyclerView.setAdapter(cursorAdapter);
 
         RecyclerView.LayoutManager layout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layout);
@@ -66,22 +70,36 @@ public class List extends AppCompatActivity {
 
             }
         }));
+
+        serviceDAO.close();
     }
 
 
     private void clickItem(int position){
-        Service e = serviceList.get(position);
+        //Service e = serviceList.get(position);
 
-        Intent it = new Intent(List.this, FullService.class);
-        it.putExtra("patrimonio",e.getPatrimony().toString());
-        it.putExtra("local",e.getLocal().toString());
-        it.putExtra("responsavel",e.getResponsible().toString());
-        it.putExtra("descricao",e.getDescription().toString());
-        it.putExtra("tipo",e.getType().toString());
-        it.putExtra("data",e.getEntryDate());
-        it.putExtra("email", e.getEmail());
-        it.putExtra("telefone",e.getTelephone());
-        startActivity(it);
+
+        String[] columns = {"_id", "patrimony", "type", "local", "responsible", "telephone", "email", "entrydate", "description"};
+
+        int[] cols = new int[columns.length];
+
+        for(int i = 0; i<columns.length; i++){
+            cols[i] = cursor.getColumnIndex(columns[i]);
+        }
+
+        if(cursor.moveToPosition(position)) {
+            Intent it = new Intent(List.this, FullService.class);
+            it.putExtra("id", cursor.getInt(cols[0]));
+            it.putExtra("patrimonio", cursor.getString(cols[1]));
+            it.putExtra("tipo", cursor.getString(cols[2]));
+            it.putExtra("local", cursor.getString(cols[3]));
+            it.putExtra("responsavel", cursor.getString(cols[4]));
+            it.putExtra("telefone", cursor.getString(cols[5]));
+            it.putExtra("email", cursor.getString(cols[6]));
+            it.putExtra("data", cursor.getString(cols[7]));
+            it.putExtra("descricao", cursor.getString(cols[8]));
+            startActivity(it);
+        }
     }
 
     @Override

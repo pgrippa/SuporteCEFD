@@ -1,4 +1,4 @@
-package br.ufes.cefd.suportcefd.model;
+package br.ufes.cefd.suportcefd.utils;
 
 import android.content.Context;
 import android.view.LayoutInflater;

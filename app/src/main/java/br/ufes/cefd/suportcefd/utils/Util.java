@@ -10,14 +10,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 
 import br.ufes.cefd.suportcefd.R;
-import br.ufes.cefd.suportcefd.model.Service;
+import br.ufes.cefd.suportcefd.domain.Service;
 
 /**
  * Created by pgrippa on 16/09/16.

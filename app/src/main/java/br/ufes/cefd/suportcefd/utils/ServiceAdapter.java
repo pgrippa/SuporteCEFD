@@ -1,4 +1,4 @@
-package br.ufes.cefd.suportcefd.model;
+package br.ufes.cefd.suportcefd.utils;
 
 /**
  * Created by pgrippa on 14/09/16.
@@ -14,6 +14,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import br.ufes.cefd.suportcefd.R;
+import br.ufes.cefd.suportcefd.domain.Service;
 import br.ufes.cefd.suportcefd.utils.Util;
 
 public class ServiceAdapter extends RecyclerView.Adapter {

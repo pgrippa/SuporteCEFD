@@ -1,22 +1,19 @@
 package br.ufes.cefd.suportcefd;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import br.ufes.cefd.suportcefd.model.Service;
-import br.ufes.cefd.suportcefd.model.SpinnerItemAdapter;
+import br.ufes.cefd.suportcefd.db.ServiceDAO;
+import br.ufes.cefd.suportcefd.domain.Service;
+import br.ufes.cefd.suportcefd.utils.SpinnerItemAdapter;
 import br.ufes.cefd.suportcefd.utils.SendMailTask;
 import br.ufes.cefd.suportcefd.utils.Util;
 
@@ -106,10 +103,15 @@ public class Cadastro extends AppCompatActivity {
 
         Service e = new Service(p,l,t,r,d,em,tl);
 
-        String data = e.getEntryDate();
-        String line = p+";"+t+";"+l+";"+r+";"+d+";"+em+";"+data+";"+tl;
+        ServiceDAO dao = new ServiceDAO(getApplicationContext());
+        dao.open("write");
 
-        Util.writeToFile(line,"services.csv",this);
+        long id = dao.putService(e);
+
+        dao.close();
+
+        e.setId(id);
+
         Toast.makeText(getBaseContext(), "Serviço cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
 
         ArrayList<String> list = new ArrayList<>();
