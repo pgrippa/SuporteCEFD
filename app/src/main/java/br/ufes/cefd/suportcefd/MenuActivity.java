@@ -21,7 +21,7 @@ public class MenuActivity extends AppCompatActivity {
             cadastrar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent it = new Intent(MenuActivity.this, Cadastro.class);
+                    Intent it = new Intent(MenuActivity.this, NewService.class);
                     startActivity(it);
                 }
             });

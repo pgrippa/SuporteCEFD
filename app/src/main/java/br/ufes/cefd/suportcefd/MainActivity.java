@@ -3,7 +3,6 @@ package br.ufes.cefd.suportcefd;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,9 +13,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
+
+import br.ufes.cefd.suportcefd.domain.Person;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    Button cadastrar;
+    Button listar;
+    Person person;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,38 +31,19 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button cadastrar = (Button) findViewById(R.id.b_cadastro);
-        if (cadastrar != null) {
-            cadastrar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent it = new Intent(MainActivity.this, Cadastro.class);
-                    startActivity(it);
-                }
-            });
-        }
+        person = (Person) this.getIntent().getExtras().getSerializable("person");
+        String type = person.getType();
 
-        Button listar = (Button) findViewById(R.id.b_listar);
-        if (listar != null) {
-            listar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent it2 = new Intent(MainActivity.this, List.class);
-                    startActivity(it2);
-                }
-            });
-        }
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
-                Intent it = new Intent(MainActivity.this, Cadastro.class);
+                *//*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*//*
+                Intent it = new Intent(MainActivity.this, NewService.class);
                 startActivity(it);
             }
-        });
+        });*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -66,6 +53,25 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        TextView name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.dr_name);
+
+        name.setText(person.getName());
+
+        TextView email = (TextView) navigationView.getHeaderView(0).findViewById(R.id.dr_email);
+        email.setText(person.getEmail());
+    }
+
+    public void newService(View v) {
+        Intent it = new Intent(MainActivity.this, NewService.class);
+        it.putExtra("person", person);
+        startActivity(it);
+    }
+
+    public void showList(View v) {
+        Intent it = new Intent(MainActivity.this, List.class);
+        it.putExtra("person", person);
+        startActivity(it);
     }
 
     @Override

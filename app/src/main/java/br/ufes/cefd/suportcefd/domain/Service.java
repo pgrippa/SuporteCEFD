@@ -1,5 +1,6 @@
 package br.ufes.cefd.suportcefd.domain;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -7,7 +8,7 @@ import java.util.Date;
 /**
  * Created by pgrippa on 8/26/16.
  */
-public class Service {
+public class Service implements Serializable{
 
     private String patrimony;
     private String local;
@@ -22,7 +23,7 @@ public class Service {
     private String telephone;
     private long id;
 
-    public Service(String p, String l, String t, String r, String d, String e, String tel){
+    public Service(String p, String l, String t, String r, String d, String e, String tel) {
         this.setPatrimony(p);
         this.setLocal(l);
         this.setType(t);

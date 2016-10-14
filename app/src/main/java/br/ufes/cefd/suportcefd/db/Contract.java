@@ -30,5 +30,6 @@ public final class Contract {
         public static final String COLUMN_TELEPHONE = "telephone";
         public static final String COLUMN_EMAIL = "email";
         public static final String COLUMN_PASSWORD = "password";
+        public static final String COLUMN_TYPE = "type";
     }
 }

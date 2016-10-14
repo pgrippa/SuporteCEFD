@@ -11,7 +11,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".Cadastro"
+    tools:context=".NewService"
     tools:showIn="@layout/activity_cadastro">
     <ScrollView
         android:layout_width="match_parent"
@@ -114,7 +114,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/t_cadastrar"
                 android:id="@+id/b_save"
-                android:layout_gravity="end" />
+                android:layout_gravity="end"
+                android:onClick="saveService"/>
 
         </LinearLayout>
     </ScrollView>

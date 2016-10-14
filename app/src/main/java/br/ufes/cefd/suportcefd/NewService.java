@@ -12,13 +12,18 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import br.ufes.cefd.suportcefd.db.ServiceDAO;
+import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
 import br.ufes.cefd.suportcefd.utils.SpinnerItemAdapter;
 import br.ufes.cefd.suportcefd.utils.SendMailTask;
 import br.ufes.cefd.suportcefd.utils.Util;
 
-public class Cadastro extends AppCompatActivity {
+public class NewService extends AppCompatActivity {
     private Spinner spinner;
+    private Person person;
+    private EditText responsible;
+    private EditText telephone;
+    private EditText email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,16 +45,28 @@ public class Cadastro extends AppCompatActivity {
 
         spinner.setAdapter(new SpinnerItemAdapter(this, array_spinner));
 
-        Button cadastrar = (Button) findViewById(R.id.b_save);
-        cadastrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveService();
-            }
-        });
+        person = (Person) this.getIntent().getExtras().getSerializable("person");
+
+        responsible = (EditText) findViewById(R.id.t_responsavel);
+        telephone = (EditText) findViewById(R.id.t_telefone);
+        email = (EditText) findViewById(R.id.t_email);
+
+        if(person.getType().equals("user")){
+            responsible.setText(person.getName());
+            responsible.setEnabled(false);
+            responsible.setVisibility(View.GONE);
+
+            telephone.setText(person.getTelephone());
+            telephone.setEnabled(false);
+            telephone.setVisibility(View.GONE);
+
+            email.setText(person.getEmail());
+            email.setEnabled(false);
+            email.setVisibility(View.GONE);
+        }
     }
 
-    private void saveService(){
+    public void saveService(View v){
         EditText pat = (EditText) findViewById(R.id.t_patrimonio);
         String p = pat.getText().toString();
 
@@ -68,11 +85,10 @@ public class Cadastro extends AppCompatActivity {
             return;
         }
 
-        EditText resp = (EditText) findViewById(R.id.t_responsavel);
-        String r = resp.getText().toString();
+        String r = responsible.getText().toString();
 
         if(r.isEmpty()){
-            resp.setError(getString(R.string.error_field_required));
+            responsible.setError(getString(R.string.error_field_required));
             return;
         }
 
@@ -84,15 +100,15 @@ public class Cadastro extends AppCompatActivity {
             return;
         }
 
-        EditText tel = (EditText) findViewById(R.id.t_telefone);
-        String tl = tel.getText().toString();
+        telephone = (EditText) findViewById(R.id.t_telefone);
+        String tl = telephone.getText().toString();
 
         if(d.isEmpty()){
             desc.setError(getString(R.string.error_field_required));
             return;
         }
 
-        EditText email = (EditText) findViewById(R.id.t_email);
+        email = (EditText) findViewById(R.id.t_email);
         String em = email.getText().toString();
 
         if(!em.contains("@")){
@@ -120,8 +136,10 @@ public class Cadastro extends AppCompatActivity {
 
         String msg = Util.getMessage(e);
 
-        new SendMailTask(Cadastro.this).execute(Util.FROMEMAIL,
-                Util.FROMPASSWORD, list, "Testando App Android", msg);
+
+
+        new SendMailTask(NewService.this).execute(Util.FROMEMAIL,
+                Util.FROMPASSWORD, list, "[CEFD #"+String.format("%07d", id)+"] Novo Chamado SUPORTE CEFD", msg);
 
         finish();
     }

@@ -13,7 +13,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="error_incorrect_email_or_password">Email ou senha incorretos!</string>
+    <string name="error_invalid_email_or_password">Email ou senha inválidos!</string>
 
     <!--tipos de equipamento -->
     <string name="t_desktop">"Desktop"</string>
@@ -28,7 +28,7 @@
     <string name="t_cadastrar_servico">Cadastrar Serviço</string>
     <string name="t_listar_servico">Listar Serviços</string>
 
-    <!-- Cadastro usuario -->
+    <!-- NewService usuario -->
 
     <string name="u_name">Nome</string>
     <string name="u_tele">Telefone</string>

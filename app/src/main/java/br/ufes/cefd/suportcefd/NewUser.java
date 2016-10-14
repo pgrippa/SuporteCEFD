@@ -45,7 +45,7 @@ public class NewUser extends AppCompatActivity {
 
         PersonDAO dao = new PersonDAO(getApplicationContext());
 
-        Person person = new Person(name, telephone, email, password);
+        Person person = new Person(name, telephone, email, password, "user");
 
         System.out.println("Person: "+ person.getName()+"\n"+ person.getEmail()+"\n"+ person.getPassword());
 

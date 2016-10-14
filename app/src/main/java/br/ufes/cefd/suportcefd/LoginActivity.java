@@ -3,7 +3,9 @@ package br.ufes.cefd.suportcefd;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -27,6 +29,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.ufes.cefd.suportcefd.db.PersonDAO;
+import br.ufes.cefd.suportcefd.domain.Person;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -44,6 +48,16 @@ import static android.Manifest.permission.READ_CONTACTS;
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     static boolean errored = false;
+    SharedPreferences prefs;
+    Person person;
+    String email;
+    String password;
+    String name;
+    String telephone;
+    String type;
+    Boolean remember;
+    CheckBox ch_remember;
+    Cursor cursor;
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -72,9 +86,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+       /* Person p1 = new Person("Philipe Grippa","99908-1479", "pgrippa@gmail.com","123456","admin");
+        Person p2 = new Person("Philipe Grippa","99908-1479", "philipegrippa@hotmail.com","123456","user");
+        PersonDAO person1 = new PersonDAO(getApplicationContext());
+        person1.putPerson(p1);
+        person1.putPerson(p2);
+*/      prefs = getSharedPreferences("user", Context.MODE_PRIVATE);
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
+        //populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -98,6 +119,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+    }
+
+    protected void restoreInfo(){
+        person = new Person(prefs);
+
+        email = person.getEmail();
+        password = person.getPassword();
+        name = person.getName();
+        type = person.getType();
+        telephone = person.getTelephone();
+
+        remember = prefs.getBoolean("remember",false);
+
+        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mPasswordView = (EditText) findViewById(R.id.password);
+
+        ch_remember = (CheckBox) findViewById(R.id.ch_remember);
+        ch_remember.setChecked(remember);
+
+        if(email!=null) mEmailView.setText(email);
+
+        if(ch_remember.isChecked() && password!=null) mPasswordView.setText(password);
+    }
+
+    protected void setRemember(){
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putBoolean("remember",ch_remember.isChecked());
+        ed.commit();
     }
 
     private void populateAutoComplete() {
@@ -130,6 +179,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         return false;
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        restoreInfo();
+
+       /*if(remember){
+            showProgress(true);
+            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask.execute((Void) null);
+        }*/
+    }
+
     /**
      * Callback received when a permissions request has been completed.
      */
@@ -159,8 +220,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        email = mEmailView.getText().toString();
+        password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -187,26 +248,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         dao.open("read");
 
-        Cursor c = dao.getPersonByEmail(email);
+        cursor = dao.getPersonByEmail(email);
 
-        if(c != null){
-            c.moveToFirst();
-            System.out.println("tamanho cursor: "+c.getCount());
+        if(cursor != null && cursor.getCount()>0){
+            cursor.moveToFirst();
 
-            String pass = c.getString(c.getColumnIndex("password"));
-            String em = c.getString(c.getColumnIndex("email"));
+            String pass = cursor.getString(cursor.getColumnIndex("password"));
+            String em = cursor.getString(cursor.getColumnIndex("email"));
 
             DUMMY_CREDENTIALS = new String[]{em+":"+pass};
-            /*
-            if(!email.equals(em) || !password.equals(pass)){
-                Toast.makeText(getBaseContext(), getString(R.string.error_incorrect_email_or_password), Toast.LENGTH_SHORT).show();
-                focusView = mEmailView;
-                cancel = true;
-            }*/
+        }else{
+            Toast.makeText(getBaseContext(), getString(R.string.error_invalid_email_or_password), Toast.LENGTH_SHORT).show();
+            mPasswordView.setError(null);
+            focusView = mEmailView;
+            cancel = true;
         }
         dao.close();
 
-
+        setRemember();
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -328,6 +387,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
+    private void startMain(){
+        Intent it = new Intent(LoginActivity.this, MainActivity.class);
+        it.putExtra("person",person);
+        startActivity(it);
+        finish();
+    }
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -360,7 +425,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 String[] pieces = credential.split(":");
                 if (pieces[0].equals(mEmail)) {
                     // Account exists, return true if the password matches.
-                    System.out.println("logou: "+pieces[0]+" "+pieces[1]);
                     return pieces[1].equals(mPassword);
                 }
             }
@@ -375,11 +439,23 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                Intent it = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(it);
-                finish();
+                name = cursor.getString(cursor.getColumnIndex("name"));
+                telephone = cursor.getString(cursor.getColumnIndex("telephone"));
+                type = cursor.getString(cursor.getColumnIndex("type"));
+
+                person = new Person(name, telephone, email, password, type);
+
+                SharedPreferences.Editor ed = prefs.edit();
+                ed.putString("email",mEmail);
+                ed.putString("password",mPassword);
+                ed.putString("name",name);
+                ed.putString("telephone",telephone);
+                ed.putString("type",type);
+                ed.commit();
+                startMain();
+
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_email_or_password));
+                mPasswordView.setError(getString(R.string.error_invalid_email_or_password));
                 mPasswordView.requestFocus();
             }
         }

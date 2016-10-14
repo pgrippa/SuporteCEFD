@@ -30,7 +30,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/u_name"
                     android:hint="@string/u_name"
-                    android:inputType="textCapWords" />
+                    android:inputType="textPersonName" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/u_telefone"
                     android:hint="@string/t_telefone"
-                    android:inputType="textCapWords" />
+                    android:inputType="phone" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -53,7 +53,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/u_email"
-                    android:hint="Email"
+                    android:hint="@string/u_email"
                     android:inputType="textEmailAddress" />
             </android.support.design.widget.TextInputLayout>
 
@@ -63,7 +63,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword|textMultiLine"
+                    android:inputType="textPassword"
                     android:ems="10"
                     android:id="@+id/u_password"
                     android:hint="@string/u_password" />
@@ -75,7 +75,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword|textMultiLine"
+                    android:inputType="textPassword"
                     android:ems="10"
                     android:id="@+id/u_repeatpass"
                     android:hint="@string/u_repeatpass" />

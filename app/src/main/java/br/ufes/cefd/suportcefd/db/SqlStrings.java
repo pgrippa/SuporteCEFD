@@ -29,7 +29,8 @@ public class SqlStrings {
                     Contract.ItemPerson.COLUMN_NAME + TEXT_TYPE + COMMA_SEP +
                     Contract.ItemPerson.COLUMN_TELEPHONE + TEXT_TYPE + COMMA_SEP +
                     Contract.ItemPerson.COLUMN_EMAIL + TEXT_TYPE + COMMA_SEP +
-                    Contract.ItemPerson.COLUMN_PASSWORD + TEXT_TYPE +
+                    Contract.ItemPerson.COLUMN_PASSWORD + TEXT_TYPE + COMMA_SEP +
+                    Contract.ItemPerson.COLUMN_TYPE + TEXT_TYPE +
                     " )";
 
     public static final String SQL_DELETE_SERVICE_ENTRIES =

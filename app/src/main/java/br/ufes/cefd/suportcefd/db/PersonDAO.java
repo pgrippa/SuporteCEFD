@@ -40,6 +40,7 @@ public class PersonDAO {
         values.put(Contract.ItemPerson.COLUMN_TELEPHONE,p.getTelephone());
         values.put(Contract.ItemPerson.COLUMN_EMAIL,p.getEmail());
         values.put(Contract.ItemPerson.COLUMN_PASSWORD,p.getPassword());
+        values.put(Contract.ItemPerson.COLUMN_TYPE,p.getType());
 
 
         // Insert the new row, returning the primary key value of the new row
@@ -51,15 +52,16 @@ public class PersonDAO {
 
         close();
 
-        System.out.println("ID PERSON: "+newRowId);
-
         return  newRowId;
     }
 
     public Cursor getPersonByEmail(String email){
         String[] projection = {
                 Contract.ItemPerson.COLUMN_EMAIL,
-                Contract.ItemPerson.COLUMN_PASSWORD
+                Contract.ItemPerson.COLUMN_PASSWORD,
+                Contract.ItemPerson.COLUMN_NAME,
+                Contract.ItemPerson.COLUMN_TELEPHONE,
+                Contract.ItemPerson.COLUMN_TYPE
         };
 
 
@@ -86,7 +88,8 @@ public class PersonDAO {
                 Contract.ItemPerson.COLUMN_NAME,
                 Contract.ItemPerson.COLUMN_TELEPHONE,
                 Contract.ItemPerson.COLUMN_EMAIL,
-                Contract.ItemPerson.COLUMN_PASSWORD
+                Contract.ItemPerson.COLUMN_PASSWORD,
+                Contract.ItemPerson.COLUMN_TYPE
         };
 
 // How you want the results sorted in the resulting Cursor
@@ -114,6 +117,7 @@ public class PersonDAO {
         values.put(Contract.ItemPerson.COLUMN_TELEPHONE,p.getTelephone());
         values.put(Contract.ItemPerson.COLUMN_EMAIL,p.getEmail());
         values.put(Contract.ItemPerson.COLUMN_PASSWORD,p.getPassword());
+        values.put(Contract.ItemPerson.COLUMN_TYPE,p.getType());
 
         String selection = Contract.ItemPerson._ID + " LIKE ?";
         String[] selectionArgs = { String.valueOf(rowId) };
