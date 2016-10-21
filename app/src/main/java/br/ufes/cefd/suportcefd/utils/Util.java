@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import br.ufes.cefd.suportcefd.R;
+import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
 
 /**
@@ -86,7 +87,7 @@ public class Util {
         }
     }
 
-    public static String getMessage(Service service){
+    public static String getMessage(Service service, Person p){
         Date end = service.getRelease();
         String close;
         if(end == null){
@@ -94,13 +95,13 @@ public class Util {
         }else{
             close = end.toString();
         }
-        String msg = "Olá " + service.getResponsible() + ",<br>Este é um email gerado automaticamente pelo sistema de Helpdesk do CEFD, POR FAVOR NÃO RESPONDA ESTE EMAIL. <br>Qualquer email enviado para este email será automaticamente descartado.<br><br>"
+        String msg = "Olá " + p.getName() + ",<br>Este é um email gerado automaticamente pelo sistema de Helpdesk do CEFD, POR FAVOR NÃO RESPONDA ESTE EMAIL. <br>Qualquer email enviado para este email será automaticamente descartado.<br><br>"
                 + "<table style=\"width: 700px;\" class=\"tab_cadre\">"
                 + "<tbody>\n"
                 + "<tr><th colspan=\"2\"><a href=\"\">MANUTEN&Ccedil;&Atilde;O DE COMPUTADORES</a></th><th></th><th></th></tr>\n"
                 + "<tr class=\"tab_bg_1\">\n"
                 + "<td>Requerentes :</td>\n"
-                + "<td> "+service.getResponsible()+" </td>\n"
+                + "<td> "+p.getName()+" </td>\n"
                 + "<td colspan=\"2\"></td>\n"
                 + "</tr>\n"
                 + "<tr class=\"tab_bg_1\">\n"

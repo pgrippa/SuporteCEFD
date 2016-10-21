@@ -7,20 +7,21 @@ public class SqlStrings {
 
     public static final String TEXT_TYPE = " TEXT";
 
-    public static final String COMMA_SEP = ",";
+    public static final String INT_TYPE = " INTEGER";
+
+    public static final String COMMA_SEP = ", ";
 
     public static final String SQL_CREATE_SERVICE_ENTRIES =
             "CREATE TABLE " + Contract.ItemService.TABLE_NAME + " (" +
-                    Contract.ItemService._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                    Contract.ItemService._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL"+ COMMA_SEP +
                     Contract.ItemService.COLUMN_PATRIMONY + TEXT_TYPE + COMMA_SEP +
                     Contract.ItemService.COLUMN_TYPE + TEXT_TYPE + COMMA_SEP +
                     Contract.ItemService.COLUMN_LOCAL + TEXT_TYPE + COMMA_SEP +
-                    Contract.ItemService.COLUMN_RESPONSIBLE + TEXT_TYPE + COMMA_SEP +
-                    Contract.ItemService.COLUMN_TELEPHONE + TEXT_TYPE + COMMA_SEP +
-                    Contract.ItemService.COLUMN_EMAIL + TEXT_TYPE + COMMA_SEP +
                     Contract.ItemService.COLUMN_DESCRIPTION + TEXT_TYPE + COMMA_SEP +
+                    Contract.ItemService.COLUMN_RESPONSIBLE + INT_TYPE + COMMA_SEP +
                     Contract.ItemService.COLUMN_ENTRYDATE + TEXT_TYPE + COMMA_SEP +
-                    Contract.ItemService.COLUMN_RESLEASEDATE + TEXT_TYPE +
+                    Contract.ItemService.COLUMN_RESLEASEDATE + TEXT_TYPE + COMMA_SEP +
+                    "FOREIGN KEY("+Contract.ItemService.COLUMN_RESPONSIBLE+") REFERENCES " +Contract.ItemPerson.TABLE_NAME +"(" + Contract.ItemPerson._ID+")" +
              " )";
 
     public static final String SQL_CREATE_PERSON_ENTRIES =

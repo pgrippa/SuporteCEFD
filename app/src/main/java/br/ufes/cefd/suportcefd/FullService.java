@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 
+import br.ufes.cefd.suportcefd.domain.Person;
+import br.ufes.cefd.suportcefd.domain.Service;
 import br.ufes.cefd.suportcefd.utils.Util;
 
 /**
@@ -29,6 +31,9 @@ public class FullService extends AppCompatActivity {
     private EditText t;
     private Button edit;
     private boolean editing = false;
+    private Person person;
+    private Service service;
+
 
 
     @Override
@@ -39,23 +44,27 @@ public class FullService extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarfull);
 
-        int id = this.getIntent().getExtras().getInt("id");
+        person = (Person) this.getIntent().getExtras().getSerializable("person");
+        service = (Service) this.getIntent().getExtras().getSerializable("service");
 
-
+        long id = service.getId();
 
         if(toolbar != null){
             toolbar.setTitle("Chamado nº "+String.format("%07d", id));
             setSupportActionBar(toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        String patrimonio = this.getIntent().getExtras().getString("patrimonio");
-        String local = this.getIntent().getExtras().getString("local");
-        String responsavel = this.getIntent().getExtras().getString("responsavel");
-        String descricao = this.getIntent().getExtras().getString("descricao");
-        String tipo = this.getIntent().getExtras().getString("tipo");
-        String data = this.getIntent().getExtras().getString("data");
-        String email = this.getIntent().getExtras().getString("email");
-        String telefone = this.getIntent().getExtras().getString("telefone");
+        String patrimonio = service.getPatrimony();
+        String local = service.getLocal();
+        String responsavel = person.getName();
+        String descricao = service.getDescription();
+        String tipo = service.getType();
+        String data = service.getEntryDate();
+        String email = person.getEmail();
+        String telefone = person.getTelephone();
 
         ImageView imageView = (ImageView) findViewById(R.id.i_ftipo);
 
@@ -130,10 +139,16 @@ public class FullService extends AppCompatActivity {
                 setFieldsEnable(!editing);
                 break;
 
+            case android.R.id.home:
+                finish();
+                break;
+
             default:
                 break;
         }
 
         return true;
     }
+
+
 }

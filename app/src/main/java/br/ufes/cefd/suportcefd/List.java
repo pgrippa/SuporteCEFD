@@ -8,11 +8,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import br.ufes.cefd.suportcefd.db.ServiceDAO;
+import br.ufes.cefd.suportcefd.domain.Person;
+import br.ufes.cefd.suportcefd.domain.Service;
+import br.ufes.cefd.suportcefd.utils.ServiceAdapter;
 import br.ufes.cefd.suportcefd.utils.ServiceCursorAdapter;
 import br.ufes.cefd.suportcefd.utils.DividerItemDecoration;
 import br.ufes.cefd.suportcefd.utils.RecyclerTouchListener;
@@ -20,22 +26,28 @@ import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class List extends AppCompatActivity {
     private RecyclerView recyclerView;
-    //ArrayList<Service> serviceList;
-    Cursor cursor;
+    private ArrayList<Service> serviceList;
+    private Person person;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listar);
 
-        //serviceList = Util.readFromFile(this, "services.csv");
-        ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
-        serviceDAO.open("read");
+        person = (Person) this.getIntent().getExtras().getSerializable("person");
+        String type = person.getType();
 
-        cursor = serviceDAO.getServices();
+        ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
+
+        if(type.equals("admin")){
+            serviceList = serviceDAO.getServices();
+        }else{
+            serviceList = serviceDAO.getPersonServices(person.getId());
+        }
+
 
         TextView empty = (TextView) findViewById(R.id.t_empty);
-        if(cursor.getCount()==0){
+        if(serviceList == null || serviceList.isEmpty()){
             empty.setText(getString(R.string.t_empty));
         }else{
             empty.setText("");
@@ -43,18 +55,18 @@ public class List extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
         toolbar.setTitle(R.string.t_listar_servico);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
 
         recyclerView = (RecyclerView) findViewById(R.id.c_list);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setItemAnimator(new SlideInUpAnimator());
 
 
-
-
-
-        ServiceCursorAdapter cursorAdapter = new ServiceCursorAdapter(this, cursor);
-        //ServiceAdapter adapter = new ServiceAdapter(this, serviceList);
-        recyclerView.setAdapter(cursorAdapter);
+        //ServiceCursorAdapter cursorAdapter = new ServiceCursorAdapter(this, cursor);
+        ServiceAdapter adapter = new ServiceAdapter(this, serviceList);
+        recyclerView.setAdapter(adapter);
 
         RecyclerView.LayoutManager layout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layout);
@@ -74,32 +86,24 @@ public class List extends AppCompatActivity {
         serviceDAO.close();
     }
 
-
     private void clickItem(int position){
-        //Service e = serviceList.get(position);
+        Service e = serviceList.get(position);
 
+        Intent it = new Intent(List.this, FullService.class);
+        it.putExtra("service",e);
+        it.putExtra("person",person);
+        startActivity(it);
 
-        String[] columns = {"_id", "patrimony", "type", "local", "responsible", "telephone", "email", "entrydate", "description"};
+    }
 
-        int[] cols = new int[columns.length];
-
-        for(int i = 0; i<columns.length; i++){
-            cols[i] = cursor.getColumnIndex(columns[i]);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
         }
 
-        if(cursor.moveToPosition(position)) {
-            Intent it = new Intent(List.this, FullService.class);
-            it.putExtra("id", cursor.getInt(cols[0]));
-            it.putExtra("patrimonio", cursor.getString(cols[1]));
-            it.putExtra("tipo", cursor.getString(cols[2]));
-            it.putExtra("local", cursor.getString(cols[3]));
-            it.putExtra("responsavel", cursor.getString(cols[4]));
-            it.putExtra("telefone", cursor.getString(cols[5]));
-            it.putExtra("email", cursor.getString(cols[6]));
-            it.putExtra("data", cursor.getString(cols[7]));
-            it.putExtra("descricao", cursor.getString(cols[8]));
-            startActivity(it);
-        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -20,7 +20,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="60dp"
-        android:onClick="newService"/>
+        android:onClick="newService"
+        style="@style/Base.Widget.AppCompat.Button.Colored"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -30,7 +31,8 @@
         android:layout_below="@+id/b_cadastro"
         android:layout_alignStart="@+id/b_cadastro"
         android:layout_alignEnd="@+id/b_cadastro"
-        android:onClick="showList"/>
+        android:onClick="showList"
+        style="@style/Base.Widget.AppCompat.Button.Colored"/>
 
     <ImageView
         android:layout_width="wrap_content"

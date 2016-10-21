@@ -52,25 +52,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     Person person;
     String email;
     String password;
-    String name;
-    String telephone;
-    String type;
-    Boolean remember;
+    boolean remember;
     CheckBox ch_remember;
-    Cursor cursor;
+    boolean logged = false;
 
     /**
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -92,6 +82,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         person1.putPerson(p1);
         person1.putPerson(p2);
 */      prefs = getSharedPreferences("user", Context.MODE_PRIVATE);
+
+        if(prefs.getBoolean("logged",false)){
+            mLoginFormView = findViewById(R.id.login_form);
+            mLoginFormView.setVisibility(View.GONE);
+            mProgressView = findViewById(R.id.login_progress);
+
+        }
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -119,18 +116,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+
     }
 
-    protected void restoreInfo(){
-        person = new Person(prefs);
+    protected void restoreInfo() {
+        email = prefs.getString("email","");
+        password = prefs.getString("password","");
 
-        email = person.getEmail();
-        password = person.getPassword();
-        name = person.getName();
-        type = person.getType();
-        telephone = person.getTelephone();
-
-        remember = prefs.getBoolean("remember",false);
+        remember = prefs.getBoolean("remember", false);
+        logged = prefs.getBoolean("logged", false);
 
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -138,14 +133,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         ch_remember = (CheckBox) findViewById(R.id.ch_remember);
         ch_remember.setChecked(remember);
 
-        if(email!=null) mEmailView.setText(email);
+        if (email != null) mEmailView.setText(email);
 
-        if(ch_remember.isChecked() && password!=null) mPasswordView.setText(password);
+        if (ch_remember.isChecked() && password != null) mPasswordView.setText(password);
     }
 
-    protected void setRemember(){
+    protected void setRemember() {
         SharedPreferences.Editor ed = prefs.edit();
-        ed.putBoolean("remember",ch_remember.isChecked());
+        ed.putBoolean("remember", ch_remember.isChecked());
         ed.commit();
     }
 
@@ -180,15 +175,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         restoreInfo();
 
-       /*if(remember){
+        if (remember && logged) {
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
-        }*/
+        }
     }
 
     /**
@@ -244,28 +239,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             cancel = true;
         }
 
-        PersonDAO dao = new PersonDAO(getApplicationContext());
 
-        dao.open("read");
-
-        cursor = dao.getPersonByEmail(email);
-
-        if(cursor != null && cursor.getCount()>0){
-            cursor.moveToFirst();
-
-            String pass = cursor.getString(cursor.getColumnIndex("password"));
-            String em = cursor.getString(cursor.getColumnIndex("email"));
-
-            DUMMY_CREDENTIALS = new String[]{em+":"+pass};
-        }else{
-            Toast.makeText(getBaseContext(), getString(R.string.error_invalid_email_or_password), Toast.LENGTH_SHORT).show();
-            mPasswordView.setError(null);
-            focusView = mEmailView;
-            cancel = true;
-        }
-        dao.close();
-
-        setRemember();
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -273,6 +247,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
+            setRemember();
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
@@ -290,7 +265,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
 
-    public void newUser(View v){
+    public void newUser(View v) {
 
         Intent it = new Intent(LoginActivity.this, NewUser.class);
         startActivity(it);
@@ -387,12 +362,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
-    private void startMain(){
+    private void startMain() {
         Intent it = new Intent(LoginActivity.this, MainActivity.class);
-        it.putExtra("person",person);
+        it.putExtra("person", person);
         startActivity(it);
         finish();
     }
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -419,7 +395,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 return false;
-            }*/
+            }
 
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
@@ -427,10 +403,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     // Account exists, return true if the password matches.
                     return pieces[1].equals(mPassword);
                 }
+
+            }*/
+
+            PersonDAO dao = new PersonDAO(getApplicationContext());
+
+            person = dao.getPersonByEmail(email);
+
+            if (person != null) {
+                return person.getPassword().equals(mPassword);
             }
 
             // TODO: register the new account here.
-            return true;
+            return false;
         }
 
         @Override
@@ -439,24 +424,16 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                name = cursor.getString(cursor.getColumnIndex("name"));
-                telephone = cursor.getString(cursor.getColumnIndex("telephone"));
-                type = cursor.getString(cursor.getColumnIndex("type"));
-
-                person = new Person(name, telephone, email, password, type);
-
                 SharedPreferences.Editor ed = prefs.edit();
-                ed.putString("email",mEmail);
-                ed.putString("password",mPassword);
-                ed.putString("name",name);
-                ed.putString("telephone",telephone);
-                ed.putString("type",type);
+                ed.putString("email", mEmail);
+                ed.putString("password", mPassword);
+                ed.putBoolean("logged", true);
                 ed.commit();
                 startMain();
 
             } else {
-                mPasswordView.setError(getString(R.string.error_invalid_email_or_password));
-                mPasswordView.requestFocus();
+                mEmailView.setError(getString(R.string.error_invalid_email_or_password));
+                mEmailView.requestFocus();
             }
         }
 

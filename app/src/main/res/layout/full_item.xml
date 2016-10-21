@@ -209,12 +209,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Editar"
-            android:id="@+id/editbutton"/>
+            android:id="@+id/editbutton"
+            style="@style/Base.Widget.AppCompat.Button.Colored"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/closeservice"
-            android:id="@+id/closebutton"/>
+            android:id="@+id/closebutton"
+            style="@style/Base.Widget.AppCompat.Button.Colored"/>
     </LinearLayout>
 
 </LinearLayout>

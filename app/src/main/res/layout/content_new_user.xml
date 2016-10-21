@@ -65,7 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <EditText
+                <AutoCompleteTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/t_responsavel"
@@ -115,7 +115,9 @@
                 android:text="@string/t_cadastrar"
                 android:id="@+id/b_save"
                 android:layout_gravity="end"
-                android:onClick="saveService"/>
+                android:onClick="saveService"
+                style="@style/Base.Widget.AppCompat.Button.Colored"
+                />
 
         </LinearLayout>
     </ScrollView>

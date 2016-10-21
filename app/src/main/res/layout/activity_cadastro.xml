@@ -21,6 +21,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_cadastro" />
+    <include layout="@layout/content_new_user" />
 
 </android.support.design.widget.CoordinatorLayout>

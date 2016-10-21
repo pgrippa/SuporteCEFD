@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+
 import br.ufes.cefd.suportcefd.domain.Service;
 
 /**
@@ -16,35 +18,33 @@ public class ServiceDAO {
     SQLiteDatabase db;
     ServiceHelper mDbHelper;
 
-    public ServiceDAO(Context context){
+    public ServiceDAO(Context context) {
         mDbHelper = new ServiceHelper(context);
     }
 
-    public void open(String mode){
-        if(mode.equals("write")) {
+    public void open(String mode) {
+        if (mode.equals("write")) {
             db = mDbHelper.getWritableDatabase();
-        }else{
+        } else {
             db = mDbHelper.getReadableDatabase();
         }
     }
 
-    public void close(){
+    public void close() {
         db.close();
     }
 
-    public long putService(Service s){
+    public long putService(Service s) {
         open("write");
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(Contract.ItemService.COLUMN_PATRIMONY, s.getPatrimony());
         values.put(Contract.ItemService.COLUMN_LOCAL, s.getLocal());
-        values.put(Contract.ItemService.COLUMN_TYPE,s.getType());
-        values.put(Contract.ItemService.COLUMN_RESPONSIBLE,s.getResponsible());
-        values.put(Contract.ItemService.COLUMN_TELEPHONE,s.getTelephone());
-        values.put(Contract.ItemService.COLUMN_EMAIL,s.getEmail());
-        values.put(Contract.ItemService.COLUMN_DESCRIPTION,s.getDescription());
-        values.put(Contract.ItemService.COLUMN_ENTRYDATE,s.getEntryDate());
-        values.put(Contract.ItemService.COLUMN_RESLEASEDATE,s.getReleaseDate());
+        values.put(Contract.ItemService.COLUMN_TYPE, s.getType());
+        values.put(Contract.ItemService.COLUMN_DESCRIPTION, s.getDescription());
+        values.put(Contract.ItemService.COLUMN_ENTRYDATE, s.getEntryDate());
+        values.put(Contract.ItemService.COLUMN_RESLEASEDATE, s.getReleaseDate());
+        values.put(Contract.ItemService.COLUMN_RESPONSIBLE, s.getIdResp());
 
 
         // Insert the new row, returning the primary key value of the new row
@@ -56,21 +56,20 @@ public class ServiceDAO {
 
         close();
 
-        return  newRowId;
+        return newRowId;
     }
 
-    public Cursor getServices(){
+    public ArrayList<Service> getServices() {
+        open("read");
         String[] projection = {
                 Contract.ItemService._ID,
                 Contract.ItemService.COLUMN_PATRIMONY,
                 Contract.ItemService.COLUMN_LOCAL,
                 Contract.ItemService.COLUMN_TYPE,
-                Contract.ItemService.COLUMN_RESPONSIBLE,
-                Contract.ItemService.COLUMN_TELEPHONE,
-                Contract.ItemService.COLUMN_EMAIL,
                 Contract.ItemService.COLUMN_DESCRIPTION,
                 Contract.ItemService.COLUMN_ENTRYDATE,
-                Contract.ItemService.COLUMN_RESLEASEDATE
+                Contract.ItemService.COLUMN_RESLEASEDATE,
+                Contract.ItemService.COLUMN_RESPONSIBLE
         };
 
 // How you want the results sorted in the resulting Cursor
@@ -87,25 +86,87 @@ public class ServiceDAO {
                 sortOrder                                 // The sort order
         );
 
+        if (c.getCount() == 0) {
+            return null;
+        }
 
-        return c;
+        ArrayList<Service> services = new ArrayList<>();
+
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            Service s = new Service(c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getLong(7));
+            s.setId(c.getLong(0));
+            s.setEntryDate(c.getString(5));
+            s.setReleaseDate(c.getString(6));
+            services.add(s);
+        }
+
+        close();
+
+        return services;
     }
 
-    public void updateService(int rowId, Service s){
+    public ArrayList<Service> getPersonServices(long personid) {
+        open("read");
+        String[] projection = {
+                Contract.ItemService._ID,
+                Contract.ItemService.COLUMN_PATRIMONY,
+                Contract.ItemService.COLUMN_LOCAL,
+                Contract.ItemService.COLUMN_TYPE,
+                Contract.ItemService.COLUMN_DESCRIPTION,
+                Contract.ItemService.COLUMN_ENTRYDATE,
+                Contract.ItemService.COLUMN_RESLEASEDATE,
+                Contract.ItemService.COLUMN_RESPONSIBLE
+        };
+
+// How you want the results sorted in the resulting Cursor
+        String sortOrder =
+                Contract.ItemService.COLUMN_PATRIMONY + " ASC";
+
+        String selection = Contract.ItemService.COLUMN_RESPONSIBLE + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(personid)};
+
+        Cursor c = db.query(
+                Contract.ItemService.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+        if (c.getCount() == 0) {
+            return null;
+        }
+
+        ArrayList<Service> services = new ArrayList<>();
+
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            Service s = new Service(c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getLong(7));
+            s.setId(c.getLong(0));
+            s.setEntryDate(c.getString(5));
+            s.setReleaseDate(c.getString(6));
+            services.add(s);
+        }
+
+        close();
+
+        return services;
+    }
+
+    public void updateService(int rowId, Service s) {
         open("write");
         ContentValues values = new ContentValues();
         values.put(Contract.ItemService.COLUMN_PATRIMONY, s.getPatrimony());
         values.put(Contract.ItemService.COLUMN_LOCAL, s.getLocal());
-        values.put(Contract.ItemService.COLUMN_TYPE,s.getType());
-        values.put(Contract.ItemService.COLUMN_RESPONSIBLE,s.getResponsible());
-        values.put(Contract.ItemService.COLUMN_TELEPHONE,s.getTelephone());
-        values.put(Contract.ItemService.COLUMN_EMAIL,s.getEmail());
-        values.put(Contract.ItemService.COLUMN_DESCRIPTION,s.getDescription());
-        values.put(Contract.ItemService.COLUMN_ENTRYDATE,s.getEntryDate());
-        values.put(Contract.ItemService.COLUMN_RESLEASEDATE,s.getReleaseDate());
+        values.put(Contract.ItemService.COLUMN_TYPE, s.getType());
+        values.put(Contract.ItemService.COLUMN_DESCRIPTION, s.getDescription());
+        values.put(Contract.ItemService.COLUMN_ENTRYDATE, s.getEntryDate());
+        values.put(Contract.ItemService.COLUMN_RESLEASEDATE, s.getReleaseDate());
+        values.put(Contract.ItemService.COLUMN_RESPONSIBLE, s.getIdResp());
 
         String selection = Contract.ItemService._ID + " LIKE ?";
-        String[] selectionArgs = { String.valueOf(rowId) };
+        String[] selectionArgs = {String.valueOf(rowId)};
 
         int count = db.update(
                 Contract.ItemService.TABLE_NAME,
@@ -116,8 +177,7 @@ public class ServiceDAO {
         close();
     }
 
-    public void clean()
-    {
+    public void clean() {
         db.execSQL("delete from " + Contract.ItemService.TABLE_NAME);
     }
 

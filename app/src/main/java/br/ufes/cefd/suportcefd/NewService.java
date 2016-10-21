@@ -3,7 +3,9 @@ package br.ufes.cefd.suportcefd;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -21,7 +23,7 @@ import br.ufes.cefd.suportcefd.utils.Util;
 public class NewService extends AppCompatActivity {
     private Spinner spinner;
     private Person person;
-    private EditText responsible;
+    private AutoCompleteTextView responsible;
     private EditText telephone;
     private EditText email;
 
@@ -33,6 +35,9 @@ public class NewService extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
         toolbar.setTitle(R.string.t_cadastrar_servico);
         setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         String[] array_spinner=new String[6];
         array_spinner[0]=getString(R.string.t_desktop);
@@ -47,21 +52,18 @@ public class NewService extends AppCompatActivity {
 
         person = (Person) this.getIntent().getExtras().getSerializable("person");
 
-        responsible = (EditText) findViewById(R.id.t_responsavel);
+        responsible = (AutoCompleteTextView) findViewById(R.id.t_responsavel);
         telephone = (EditText) findViewById(R.id.t_telefone);
         email = (EditText) findViewById(R.id.t_email);
 
         if(person.getType().equals("user")){
             responsible.setText(person.getName());
-            responsible.setEnabled(false);
             responsible.setVisibility(View.GONE);
 
             telephone.setText(person.getTelephone());
-            telephone.setEnabled(false);
             telephone.setVisibility(View.GONE);
 
             email.setText(person.getEmail());
-            email.setEnabled(false);
             email.setVisibility(View.GONE);
         }
     }
@@ -117,14 +119,11 @@ public class NewService extends AppCompatActivity {
             return;
         }
 
-        Service e = new Service(p,l,t,r,d,em,tl);
+        Service e = new Service(p,l,t,d,person.getId());
 
         ServiceDAO dao = new ServiceDAO(getApplicationContext());
-        dao.open("write");
 
         long id = dao.putService(e);
-
-        dao.close();
 
         e.setId(id);
 
@@ -134,7 +133,7 @@ public class NewService extends AppCompatActivity {
 
         list.add(em);
 
-        String msg = Util.getMessage(e);
+        String msg = Util.getMessage(e,person);
 
 
 
@@ -142,6 +141,16 @@ public class NewService extends AppCompatActivity {
                 Util.FROMPASSWORD, list, "[CEFD #"+String.format("%07d", id)+"] Novo Chamado SUPORTE CEFD", msg);
 
         finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

@@ -1,6 +1,7 @@
 package br.ufes.cefd.suportcefd.domain;
 
 import android.content.SharedPreferences;
+import android.database.Cursor;
 
 import java.io.Serializable;
 
@@ -25,10 +26,15 @@ public class Person implements Serializable{
         this.setType(type);
     }
 
-    public Person(SharedPreferences prefs){
-        restorePerson(prefs);
+    public Person(Cursor cursor){
+        cursor.moveToFirst();
+        this.setId(cursor.getLong(0));
+        this.setName(cursor.getString(1));
+        this.setTelephone(cursor.getString(2));
+        this.setEmail(cursor.getString(3));
+        this.setPassword(cursor.getString(4));
+        this.setType(cursor.getString(5));
     }
-
 
     public long getId() {
         return id;
@@ -78,11 +84,4 @@ public class Person implements Serializable{
         this.type = type;
     }
 
-    public void restorePerson(SharedPreferences prefs){
-        this.setEmail(prefs.getString("email", ""));
-        this.setPassword(prefs.getString("password", ""));
-        this.setName(prefs.getString("name", ""));
-        this.setTelephone(prefs.getString("telephone",""));
-        this.setType(prefs.getString("type",""));
-    }
 }

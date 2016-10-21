@@ -14,6 +14,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import br.ufes.cefd.suportcefd.R;
+import br.ufes.cefd.suportcefd.db.PersonDAO;
+import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
 import br.ufes.cefd.suportcefd.utils.Util;
 
@@ -41,14 +43,17 @@ public class ServiceAdapter extends RecyclerView.Adapter {
 
         Service s = services.get(position);
 
-        holder.getResponsible().setText(s.getResponsible());
+        Person p = new PersonDAO(context).getPersonById(s.getIdResp());
+
+        holder.getResponsible().setText(p.getName());
         holder.getPatrimony().setText(s.getPatrimony());
         Util.setIconByType(context,holder.getIcon() , s.getType());
     }
 
     @Override
     public int getItemCount() {
-        return services.size();
+
+        return services!=null ? services.size() : 0;
     }
 
     protected class ServiceViewHolder extends RecyclerView.ViewHolder{

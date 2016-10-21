@@ -22,6 +22,7 @@ public class Service implements Serializable{
     private String releaseDate;
     private String telephone;
     private long id;
+    private long idResp;
 
     public Service(String p, String l, String t, String r, String d, String e, String tel) {
         this.setPatrimony(p);
@@ -31,6 +32,18 @@ public class Service implements Serializable{
         this.setDescription(d);
         this.setEmail(e);
         this.setTelephone(tel);
+        this.setEntry(Calendar.getInstance().getTime());
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy HH:mm");
+        this.setEntryDate(dateFormat.format(getEntry()));
+        this.setRelease(null);
+    }
+    public Service (String p, String l, String t, String d, long idResp){
+        this.patrimony = p;
+        this.local = l;
+        this.type = t;
+        this.description = d;
+        this.idResp = idResp;
         this.setEntry(Calendar.getInstance().getTime());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy HH:mm");
@@ -138,5 +151,13 @@ public class Service implements Serializable{
 
     public void setTelephone(String telephone) {
         this.telephone = telephone;
+    }
+
+    public long getIdResp() {
+        return idResp;
+    }
+
+    public void setIdResp(long idResp) {
+        this.idResp = idResp;
     }
 }

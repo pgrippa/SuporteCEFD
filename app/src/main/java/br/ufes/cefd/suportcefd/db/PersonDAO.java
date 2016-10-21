@@ -4,6 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.ArrayAdapter;
+
+import java.util.ArrayList;
 
 import br.ufes.cefd.suportcefd.domain.Person;
 
@@ -55,12 +58,14 @@ public class PersonDAO {
         return  newRowId;
     }
 
-    public Cursor getPersonByEmail(String email){
+    public Person getPersonByEmail(String email){
+        open("read");
         String[] projection = {
-                Contract.ItemPerson.COLUMN_EMAIL,
-                Contract.ItemPerson.COLUMN_PASSWORD,
+                Contract.ItemPerson._ID,
                 Contract.ItemPerson.COLUMN_NAME,
                 Contract.ItemPerson.COLUMN_TELEPHONE,
+                Contract.ItemPerson.COLUMN_EMAIL,
+                Contract.ItemPerson.COLUMN_PASSWORD,
                 Contract.ItemPerson.COLUMN_TYPE
         };
 
@@ -78,10 +83,17 @@ public class PersonDAO {
                 null                                 // The sort order
         );
 
-        return c;
+        if(c.getCount()==0){
+            return null;
+        }
+        Person person = new Person(c);
+
+        close();
+
+        return person;
     }
 
-    public Cursor getPersonList(){
+    public Person getPersonById(long id){
         open("read");
         String[] projection = {
                 Contract.ItemPerson._ID,
@@ -92,7 +104,42 @@ public class PersonDAO {
                 Contract.ItemPerson.COLUMN_TYPE
         };
 
-// How you want the results sorted in the resulting Cursor
+
+        String selection = Contract.ItemPerson._ID + " LIKE ?";
+        String[] selectionArgs = { String.valueOf(id) };
+
+        Cursor c = db.query(
+                Contract.ItemPerson.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+        if(c.getCount()==0){
+            return null;
+        }
+        Person person = new Person(c);
+
+        close();
+
+        return person;
+    }
+
+    /*public Cursor getPersonList(){
+        open("read");
+        String[] projection = {
+                Contract.ItemPerson._ID,
+                Contract.ItemPerson.COLUMN_NAME,
+                Contract.ItemPerson.COLUMN_TELEPHONE,
+                Contract.ItemPerson.COLUMN_EMAIL,
+                Contract.ItemPerson.COLUMN_PASSWORD,
+                Contract.ItemPerson.COLUMN_TYPE
+        };
+
+        // How you want the results sorted in the resulting Cursor
         String sortOrder =
                 Contract.ItemPerson.COLUMN_NAME + " ASC";
 
@@ -108,6 +155,42 @@ public class PersonDAO {
 
         close();
         return c;
+    }*/
+
+    public ArrayList<Person> getPersonList(){
+        open("read");
+        String[] projection = {
+                Contract.ItemPerson._ID,
+                Contract.ItemPerson.COLUMN_NAME,
+                Contract.ItemPerson.COLUMN_TELEPHONE,
+                Contract.ItemPerson.COLUMN_EMAIL,
+                Contract.ItemPerson.COLUMN_PASSWORD,
+                Contract.ItemPerson.COLUMN_TYPE
+        };
+
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder =
+                Contract.ItemPerson.COLUMN_NAME + " ASC";
+
+        Cursor c = db.query(
+                Contract.ItemPerson.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+        ArrayList<Person> list = new ArrayList<>();
+
+        for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()){
+            Person p = new Person(c);
+            list.add(p);
+        }
+
+        close();
+        return list;
     }
 
     public void updatePerson(int rowId, Person p){

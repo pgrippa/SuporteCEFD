@@ -1,6 +1,8 @@
 package br.ufes.cefd.suportcefd;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.view.View;
@@ -120,10 +122,17 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_manage) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_logout) {
+            SharedPreferences prefs = getSharedPreferences("user", Context.MODE_PRIVATE);
+            SharedPreferences.Editor ed = prefs.edit();
+            ed.putBoolean("logged",false);
+            ed.commit();
+            Intent it = new Intent(MainActivity.this,LoginActivity.class);
+            startActivity(it);
+            finish();
 
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_exit) {
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
