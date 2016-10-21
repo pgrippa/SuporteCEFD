@@ -15,12 +15,11 @@ public final class Contract {
         public static final String COLUMN_PATRIMONY = "patrimony";
         public static final String COLUMN_LOCAL = "local";
         public static final String COLUMN_TYPE = "type";
-        public static final String COLUMN_TELEPHONE = "telephone";
-        public static final String COLUMN_EMAIL = "email";
         public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_RESPONSIBLE = "responsible";
         public static final String COLUMN_ENTRYDATE = "entrydate";
         public static final String COLUMN_RESLEASEDATE = "releasedate";
+        public static final String COLUMN_ACTIVE = "active";
 
     }
 

@@ -216,6 +216,7 @@
             android:layout_height="wrap_content"
             android:text="@string/closeservice"
             android:id="@+id/closebutton"
+            android:onClick="closeService"
             style="@style/Base.Widget.AppCompat.Button.Colored"/>
     </LinearLayout>
 

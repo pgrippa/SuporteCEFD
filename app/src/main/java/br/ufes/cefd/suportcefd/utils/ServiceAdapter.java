@@ -56,6 +56,12 @@ public class ServiceAdapter extends RecyclerView.Adapter {
         return services!=null ? services.size() : 0;
     }
 
+    public void swap(ArrayList<Service> list){
+        services.clear();
+        services.addAll(list);
+        notifyDataSetChanged();
+    }
+
     protected class ServiceViewHolder extends RecyclerView.ViewHolder{
 
         private TextView patrimony;

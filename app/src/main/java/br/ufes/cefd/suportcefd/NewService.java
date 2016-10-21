@@ -35,7 +35,6 @@ public class NewService extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
         toolbar.setTitle(R.string.t_cadastrar_servico);
         setSupportActionBar(toolbar);
-        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -137,8 +136,8 @@ public class NewService extends AppCompatActivity {
 
 
 
-        new SendMailTask(NewService.this).execute(Util.FROMEMAIL,
-                Util.FROMPASSWORD, list, "[CEFD #"+String.format("%07d", id)+"] Novo Chamado SUPORTE CEFD", msg);
+        /*new SendMailTask(NewService.this).execute(Util.FROMEMAIL,
+                Util.FROMPASSWORD, list, "[CEFD #"+String.format("%07d", id)+"] Novo Chamado SUPORTE CEFD", msg);*/
 
         finish();
     }

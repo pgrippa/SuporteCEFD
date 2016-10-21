@@ -2,9 +2,9 @@ package br.ufes.cefd.suportcefd;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -22,29 +22,49 @@ public class NewUser extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarnewuser);
+        toolbar.setTitle(getString(R.string.t_cadastrar_usuario));
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
     }
 
     public void createUser(View v){
         EditText n = (EditText) findViewById(R.id.u_name);
         name = n.getText().toString();
 
+        if(name.isEmpty()){
+            n.setError(getString(R.string.error_field_required));
+            return;
+        }
+
         EditText t = (EditText) findViewById(R.id.u_telefone);
         telephone = t.getText().toString();
+
+        if(telephone.isEmpty()){
+            t.setError(getString(R.string.error_field_required));
+            return;
+        }
 
         EditText e = (EditText) findViewById(R.id.u_email);
         email = e.getText().toString();
 
+        if(!email.contains("@")){
+            e.requestFocus();
+            e.setError(getString(R.string.error_invalid_email));
+            return;
+        }else if(email.isEmpty()){
+            e.setError(getString(R.string.error_field_required));
+            return;
+        }
+
         EditText p = (EditText) findViewById(R.id.u_password);
         password = p.getText().toString();
 
-        EditText rp = (EditText) findViewById(R.id.u_repeatpass);
-        String rePassword = rp.getText().toString();
-
-        if(!password.equals(rePassword)){
-            p.setError("Senhas devem ser iguais");
-            p.setError("");
+        if(password.isEmpty()){
+            e.setError(getString(R.string.error_field_required));
+            return;
         }
 
         PersonDAO dao = new PersonDAO(getApplicationContext());

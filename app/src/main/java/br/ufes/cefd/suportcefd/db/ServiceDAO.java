@@ -45,6 +45,7 @@ public class ServiceDAO {
         values.put(Contract.ItemService.COLUMN_ENTRYDATE, s.getEntryDate());
         values.put(Contract.ItemService.COLUMN_RESLEASEDATE, s.getReleaseDate());
         values.put(Contract.ItemService.COLUMN_RESPONSIBLE, s.getIdResp());
+        values.put(Contract.ItemService.COLUMN_ACTIVE, s.getActive());
 
 
         // Insert the new row, returning the primary key value of the new row
@@ -69,12 +70,12 @@ public class ServiceDAO {
                 Contract.ItemService.COLUMN_DESCRIPTION,
                 Contract.ItemService.COLUMN_ENTRYDATE,
                 Contract.ItemService.COLUMN_RESLEASEDATE,
-                Contract.ItemService.COLUMN_RESPONSIBLE
+                Contract.ItemService.COLUMN_RESPONSIBLE,
+                Contract.ItemService.COLUMN_ACTIVE
         };
 
-// How you want the results sorted in the resulting Cursor
         String sortOrder =
-                Contract.ItemService.COLUMN_PATRIMONY + " ASC";
+                Contract.ItemService.COLUMN_ACTIVE + " DESC";
 
         Cursor c = db.query(
                 Contract.ItemService.TABLE_NAME,  // The table to query
@@ -97,6 +98,7 @@ public class ServiceDAO {
             s.setId(c.getLong(0));
             s.setEntryDate(c.getString(5));
             s.setReleaseDate(c.getString(6));
+            s.setActive(c.getInt(8));
             services.add(s);
         }
 
@@ -105,7 +107,7 @@ public class ServiceDAO {
         return services;
     }
 
-    public ArrayList<Service> getPersonServices(long personid) {
+    public ArrayList<Service> getActiveServices(boolean active) {
         open("read");
         String[] projection = {
                 Contract.ItemService._ID,
@@ -115,13 +117,58 @@ public class ServiceDAO {
                 Contract.ItemService.COLUMN_DESCRIPTION,
                 Contract.ItemService.COLUMN_ENTRYDATE,
                 Contract.ItemService.COLUMN_RESLEASEDATE,
-                Contract.ItemService.COLUMN_RESPONSIBLE
+                Contract.ItemService.COLUMN_RESPONSIBLE,
+                Contract.ItemService.COLUMN_ACTIVE
         };
 
-// How you want the results sorted in the resulting Cursor
-        String sortOrder =
-                Contract.ItemService.COLUMN_PATRIMONY + " ASC";
+        String selection = Contract.ItemService.COLUMN_ACTIVE + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(active ? 1 : 0)};
+        Cursor c = db.query(
+                Contract.ItemService.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
 
+        if (c.getCount() == 0) {
+            return null;
+        }
+
+        ArrayList<Service> services = new ArrayList<>();
+
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            Service s = new Service(c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getLong(7));
+            s.setId(c.getLong(0));
+            s.setEntryDate(c.getString(5));
+            s.setReleaseDate(c.getString(6));
+            s.setActive(c.getInt(8));
+            services.add(s);
+        }
+
+        close();
+
+        return services;
+    }
+
+    public ArrayList<Service> getPersonAllServices(long personid) {
+        open("read");
+        String[] projection = {
+                Contract.ItemService._ID,
+                Contract.ItemService.COLUMN_PATRIMONY,
+                Contract.ItemService.COLUMN_LOCAL,
+                Contract.ItemService.COLUMN_TYPE,
+                Contract.ItemService.COLUMN_DESCRIPTION,
+                Contract.ItemService.COLUMN_ENTRYDATE,
+                Contract.ItemService.COLUMN_RESLEASEDATE,
+                Contract.ItemService.COLUMN_RESPONSIBLE,
+                Contract.ItemService.COLUMN_ACTIVE
+        };
+
+        String sortOrder =
+                Contract.ItemService.COLUMN_ACTIVE + " DESC";
         String selection = Contract.ItemService.COLUMN_RESPONSIBLE + " LIKE ?";
         String[] selectionArgs = {String.valueOf(personid)};
 
@@ -146,6 +193,7 @@ public class ServiceDAO {
             s.setId(c.getLong(0));
             s.setEntryDate(c.getString(5));
             s.setReleaseDate(c.getString(6));
+            s.setActive(c.getInt(8));
             services.add(s);
         }
 
@@ -154,7 +202,104 @@ public class ServiceDAO {
         return services;
     }
 
-    public void updateService(int rowId, Service s) {
+    public ArrayList<Service> getPersonServices(long personid, boolean active) {
+        open("read");
+        String[] projection = {
+                Contract.ItemService._ID,
+                Contract.ItemService.COLUMN_PATRIMONY,
+                Contract.ItemService.COLUMN_LOCAL,
+                Contract.ItemService.COLUMN_TYPE,
+                Contract.ItemService.COLUMN_DESCRIPTION,
+                Contract.ItemService.COLUMN_ENTRYDATE,
+                Contract.ItemService.COLUMN_RESLEASEDATE,
+                Contract.ItemService.COLUMN_RESPONSIBLE,
+                Contract.ItemService.COLUMN_ACTIVE
+        };
+
+        String selection = Contract.ItemService.COLUMN_RESPONSIBLE + " LIKE ? AND "+Contract.ItemService.COLUMN_ACTIVE + " LIKE ?";
+        String[] selectionArgs = {String.valueOf(personid),String.valueOf(active ? 1 : 0)};
+
+        Cursor c = db.query(
+                Contract.ItemService.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+        if (c.getCount() == 0) {
+            return null;
+        }
+
+        ArrayList<Service> services = new ArrayList<>();
+
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            Service s = new Service(c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getLong(7));
+            s.setId(c.getLong(0));
+            s.setEntryDate(c.getString(5));
+            s.setReleaseDate(c.getString(6));
+            s.setActive(c.getInt(8));
+            services.add(s);
+        }
+
+        close();
+
+        return services;
+    }
+
+    public ArrayList<Service> searchService(String query) {
+        open("read");
+        String[] projection = {
+                Contract.ItemService._ID,
+                Contract.ItemService.COLUMN_PATRIMONY,
+                Contract.ItemService.COLUMN_LOCAL,
+                Contract.ItemService.COLUMN_TYPE,
+                Contract.ItemService.COLUMN_DESCRIPTION,
+                Contract.ItemService.COLUMN_ENTRYDATE,
+                Contract.ItemService.COLUMN_RESLEASEDATE,
+                Contract.ItemService.COLUMN_RESPONSIBLE,
+                Contract.ItemService.COLUMN_ACTIVE
+        };
+
+        String selection = Contract.ItemService.COLUMN_PATRIMONY + " MATCH ?";
+        String[] selectionArgs = {query+"*"};
+
+        String sortOrder =
+                Contract.ItemService.COLUMN_ACTIVE + " DESC";
+
+        Cursor c = db.query(
+                Contract.ItemService.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+        if (c.getCount() == 0) {
+            return null;
+        }
+
+        ArrayList<Service> services = new ArrayList<>();
+
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            Service s = new Service(c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getLong(7));
+            s.setId(c.getLong(0));
+            s.setEntryDate(c.getString(5));
+            s.setReleaseDate(c.getString(6));
+            s.setActive(c.getInt(8));
+            services.add(s);
+        }
+
+        close();
+
+        return services;
+    }
+
+    public void updateService(long rowId, Service s) {
         open("write");
         ContentValues values = new ContentValues();
         values.put(Contract.ItemService.COLUMN_PATRIMONY, s.getPatrimony());
@@ -164,6 +309,7 @@ public class ServiceDAO {
         values.put(Contract.ItemService.COLUMN_ENTRYDATE, s.getEntryDate());
         values.put(Contract.ItemService.COLUMN_RESLEASEDATE, s.getReleaseDate());
         values.put(Contract.ItemService.COLUMN_RESPONSIBLE, s.getIdResp());
+        values.put(Contract.ItemService.COLUMN_ACTIVE, s.getActive());
 
         String selection = Contract.ItemService._ID + " LIKE ?";
         String[] selectionArgs = {String.valueOf(rowId)};

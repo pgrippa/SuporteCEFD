@@ -11,9 +11,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="br.ufes.cefd.suportcefd.NewUser"
-    tools:showIn="@layout/activity_new_user">
-
+    tools:context=".NewService"
+    tools:showIn="@layout/activity_cadastro">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="480dp"
@@ -28,13 +27,50 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/t_patrimonio"
+                android:hint="@string/t_patrimonio"
+                android:inputType="textCapSentences" />
+            </android.support.design.widget.TextInputLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/l_tipo"
+                android:id="@+id/l_tipo" />
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinner1"
+                android:spinnerMode="dropdown" />
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/u_name"
-                    android:hint="@string/u_name"
-                    android:inputType="textPersonName"
-                    />
+                    android:id="@+id/t_local"
+                    android:hint="@string/t_local"
+                    android:inputType="textCapSentences" />
+            </android.support.design.widget.TextInputLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <AutoCompleteTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/t_responsavel"
+                    android:hint="@string/t_responsavel"
+                    android:inputType="textCapWords" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -44,9 +80,9 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/u_telefone"
+                    android:id="@+id/t_telefone"
                     android:hint="@string/t_telefone"
-                    android:inputType="phone" />
+                    android:inputType="textCapWords" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -56,8 +92,8 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/u_email"
-                    android:hint="@string/u_email"
+                    android:id="@+id/t_email"
+                    android:hint="Email"
                     android:inputType="textEmailAddress" />
             </android.support.design.widget.TextInputLayout>
 
@@ -67,33 +103,21 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword"
+                    android:inputType="textCapSentences|textMultiLine"
                     android:ems="10"
-                    android:id="@+id/u_password"
-                    android:hint="@string/u_password" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:ems="10"
-                    android:id="@+id/u_repeatpass"
-                    android:hint="@string/u_repeatpass" />
+                    android:id="@+id/t_description"
+                    android:hint="@string/t_descricao" />
             </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/t_cadastrar"
-                android:id="@+id/u_save"
+                android:id="@+id/b_save"
                 android:layout_gravity="end"
-                android:onClick="createUser"
-                android:drawableLeft="@drawable/ic_add_24dp"
-                style="@style/Base.Widget.AppCompat.Button.Colored"/>
+                android:onClick="saveService"
+                style="@style/Base.Widget.AppCompat.Button.Colored"
+                />
 
         </LinearLayout>
     </ScrollView>

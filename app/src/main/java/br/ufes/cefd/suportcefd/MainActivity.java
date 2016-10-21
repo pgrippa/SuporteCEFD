@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity
     public void showList(View v) {
         Intent it = new Intent(MainActivity.this, List.class);
         it.putExtra("person", person);
+        it.putExtra("mode", "list");
         startActivity(it);
     }
 

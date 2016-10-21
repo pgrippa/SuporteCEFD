@@ -21,6 +21,7 @@ public class SqlStrings {
                     Contract.ItemService.COLUMN_RESPONSIBLE + INT_TYPE + COMMA_SEP +
                     Contract.ItemService.COLUMN_ENTRYDATE + TEXT_TYPE + COMMA_SEP +
                     Contract.ItemService.COLUMN_RESLEASEDATE + TEXT_TYPE + COMMA_SEP +
+                    Contract.ItemService.COLUMN_ACTIVE + INT_TYPE + COMMA_SEP +
                     "FOREIGN KEY("+Contract.ItemService.COLUMN_RESPONSIBLE+") REFERENCES " +Contract.ItemPerson.TABLE_NAME +"(" + Contract.ItemPerson._ID+")" +
              " )";
 

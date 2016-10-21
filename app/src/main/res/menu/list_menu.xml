@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".List" >
+
+    <item android:id="@+id/search"
+        android:title="@string/search_title"
+        android:icon="@drawable/ic_search_24dp"
+        app:showAsAction="collapseActionView|ifRoom"
+        android:actionViewClass="android.support.v7.widget.SearchView" />
+
+
+    <item
+        android:id="@+id/filter"
+        android:title="Filtrar por..."
+        android:icon="@drawable/ic_filter_list_24dp"
+        app:showAsAction="never">
+        <menu xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto">
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/filterActive"
+                    android:title="Abertos"
+                    android:checked="true"/>
+                <item
+                    android:id="@+id/filterInactive"
+                    android:title="Fechados" />
+                <item
+                    android:id="@+id/filterAll"
+                    android:title="Todos" />
+
+            </group>
+        </menu>
+    </item>
+
+</menu>

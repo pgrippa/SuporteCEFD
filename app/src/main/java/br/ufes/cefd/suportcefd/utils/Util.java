@@ -26,51 +26,6 @@ public class Util {
     public static String FROMNAME = "Suporte Informática CEFD";
     public static String FROMPASSWORD = "cefd321456987";
 
-
-    public static void writeToFile(String data, String filename, Context context) {
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(filename, Context.MODE_APPEND));
-            outputStreamWriter.write(data);
-            outputStreamWriter.write('\n');
-            outputStreamWriter.close();
-        }
-        catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }
-    }
-
-    public static ArrayList<Service> readFromFile(Context context, String filename) {
-
-        ArrayList<Service> list = new ArrayList<>();
-
-        try {
-            InputStream inputStream = context.openFileInput(filename);
-
-            if ( inputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    System.out.println(receiveString);
-                    String[] line = receiveString.split(";");
-                    Service e = new Service(line[0],line[2],line[1],line[3],line[4],line[5],line[7]);
-                    e.setEntryDate(line[6]);
-                    list.add(e);
-                }
-
-                inputStream.close();
-            }
-        }
-        catch (FileNotFoundException e) {
-            Log.e("login activity", "File not found: " + e.toString());
-        } catch (IOException e) {
-            Log.e("login activity", "Can not read file: " + e.toString());
-        }
-
-        return list;
-    }
-
     public static void setIconByType(Context context, ImageView imageView, String tipo){
         if (tipo.equals(context.getString(R.string.t_desktop))) {
             imageView.setImageResource(R.drawable.desktop);

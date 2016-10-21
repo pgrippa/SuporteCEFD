@@ -1,5 +1,6 @@
 package br.ufes.cefd.suportcefd;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 
+import br.ufes.cefd.suportcefd.db.ServiceDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
 import br.ufes.cefd.suportcefd.utils.Util;
@@ -48,6 +50,7 @@ public class FullService extends AppCompatActivity {
         service = (Service) this.getIntent().getExtras().getSerializable("service");
 
         long id = service.getId();
+        System.out.println("SERVICE ACTIVE FULL: "+service.getActive());
 
         if(toolbar != null){
             toolbar.setTitle("Chamado nº "+String.format("%07d", id));
@@ -91,15 +94,6 @@ public class FullService extends AppCompatActivity {
 
         Util.setIconByType(this,imageView,tipo);
 
-        Button close = (Button) findViewById(R.id.closebutton);
-
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-
         edit = (Button) findViewById(R.id.editbutton);
 
         edit.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +102,22 @@ public class FullService extends AppCompatActivity {
                 setFieldsEnable(!editing);
             }
         });
+
+        if(service.getActive()==0){
+            Button close = (Button) findViewById(R.id.closebutton);
+            close.setVisibility(View.GONE);
+            edit.setVisibility(View.GONE);
+        }
+    }
+
+    public void closeService(View v){
+
+        Intent intent = new Intent();
+
+        intent.putExtra("id",service.getId());
+        setResult(RESULT_OK,intent);
+
+        finish();
     }
 
     private void setFieldsEnable(boolean value){
@@ -126,8 +136,11 @@ public class FullService extends AppCompatActivity {
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_full_service, menu);
+        if(service.getActive()==1){
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.menu_full_service, menu);
+            return true;
+        }
         return true;
     }
 

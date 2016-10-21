@@ -13,48 +13,28 @@ public class Service implements Serializable{
     private String patrimony;
     private String local;
     private String type;
-    private String responsible;
-    private String email;
     private String description;
     private Date entry;
     private String entryDate;
     private Date release;
     private String releaseDate;
-    private String telephone;
     private long id;
     private long idResp;
+    private int active;
 
-    public Service(String p, String l, String t, String r, String d, String e, String tel) {
-        this.setPatrimony(p);
-        this.setLocal(l);
-        this.setType(t);
-        this.setResponsible(r);
-        this.setDescription(d);
-        this.setEmail(e);
-        this.setTelephone(tel);
-        this.setEntry(Calendar.getInstance().getTime());
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy HH:mm");
-        this.setEntryDate(dateFormat.format(getEntry()));
-        this.setRelease(null);
-    }
     public Service (String p, String l, String t, String d, long idResp){
         this.patrimony = p;
         this.local = l;
         this.type = t;
         this.description = d;
         this.idResp = idResp;
+        this.active = 1;
+
         this.setEntry(Calendar.getInstance().getTime());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy HH:mm");
         this.setEntryDate(dateFormat.format(getEntry()));
         this.setRelease(null);
-    }
-
-
-    @Override
-    public String toString(){
-        return getPatrimony() +" - "+ getLocal() +" - "+ getType() +" - "+ getResponsible();
     }
 
     public String getPatrimony() {
@@ -81,28 +61,12 @@ public class Service implements Serializable{
         this.type = type;
     }
 
-    public String getResponsible() {
-        return responsible;
-    }
-
-    public void setResponsible(String responsible) {
-        this.responsible = responsible;
-    }
-
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public Date getEntry() {
@@ -145,19 +109,19 @@ public class Service implements Serializable{
         this.releaseDate = releaseDate;
     }
 
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
     public long getIdResp() {
         return idResp;
     }
 
     public void setIdResp(long idResp) {
         this.idResp = idResp;
+    }
+
+    public int getActive() {
+        return active;
+    }
+
+    public void setActive(int active) {
+        this.active = active;
     }
 }

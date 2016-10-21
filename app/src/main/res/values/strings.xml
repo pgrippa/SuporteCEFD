@@ -27,6 +27,7 @@
     <string name="title_activity_menu">Menu Principal</string>
     <string name="t_cadastrar_servico">Cadastrar Serviço</string>
     <string name="t_listar_servico">Listar Serviços</string>
+    <string name="t_cadastrar_usuario">Cadastrar Usuário</string>
 
     <!-- NewService usuario -->
 
@@ -55,4 +56,5 @@
 
     <string name="action_settings">Configurações</string>
     <string name="action_editar">Editar</string>
+    <string name="search_title">"Pesquisar Serviço"</string>
 </resources>
