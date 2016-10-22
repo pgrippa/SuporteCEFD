@@ -17,7 +17,6 @@ import br.ufes.cefd.suportcefd.R;
 import br.ufes.cefd.suportcefd.db.PersonDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
-import br.ufes.cefd.suportcefd.utils.Util;
 
 public class ServiceAdapter extends RecyclerView.Adapter {
     private final Context context;
@@ -47,7 +46,9 @@ public class ServiceAdapter extends RecyclerView.Adapter {
 
         holder.getResponsible().setText(p.getName());
         holder.getPatrimony().setText(s.getPatrimony());
-        Util.setIconByType(context,holder.getIcon() , s.getType());
+        Util.setIconByType(context,holder.getIcon(), s.getType());
+        Util.setStatusIcon(context,holder.getStatus(), s.getActive());
+
     }
 
     @Override
@@ -67,6 +68,7 @@ public class ServiceAdapter extends RecyclerView.Adapter {
         private TextView patrimony;
         private TextView responsible;
         private ImageView icon;
+        private ImageView status;
 
         public ServiceViewHolder(View view) {
             super(view);
@@ -74,6 +76,7 @@ public class ServiceAdapter extends RecyclerView.Adapter {
             setPatrimony((TextView) view.findViewById(R.id.t_tpatrimonio));
             setResponsible((TextView) view.findViewById(R.id.t_tresponsavel));
             setIcon((ImageView) view.findViewById(R.id.i_logo));
+            setStatus((ImageView) view.findViewById(R.id.icon_ok));
         }
 
         public TextView getPatrimony() {
@@ -98,6 +101,14 @@ public class ServiceAdapter extends RecyclerView.Adapter {
 
         public void setIcon(ImageView icon) {
             this.icon = icon;
+        }
+
+        public ImageView getStatus() {
+            return status;
+        }
+
+        public void setStatus(ImageView status) {
+            this.status = status;
         }
     }
 }

@@ -42,6 +42,23 @@ public class Util {
         }
     }
 
+    public static void setStatusIcon(Context context, ImageView imageView, int status){
+        switch (status){
+
+            case 0:
+                imageView.setImageResource(R.drawable.ic_status_ok_24dp);
+                break;
+
+            case 1:
+                imageView.setImageResource(R.drawable.ic_status_pr_24dp);
+                break;
+
+            default:
+                imageView.setImageResource(R.drawable.ic_status_pr_24dp);
+                break;
+        }
+    }
+
     public static String getMessage(Service service, Person p){
         Date end = service.getRelease();
         String close;

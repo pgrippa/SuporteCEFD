@@ -124,4 +124,9 @@ public class Service implements Serializable{
     public void setActive(int active) {
         this.active = active;
     }
+
+    @Override
+    public String toString(){
+        return patrimony+" - "+type;
+    }
 }

@@ -8,14 +8,14 @@
         android:title="@string/search_title"
         android:icon="@drawable/ic_search_24dp"
         app:showAsAction="collapseActionView|ifRoom"
-        android:actionViewClass="android.support.v7.widget.SearchView" />
+        app:actionViewClass="android.support.v7.widget.SearchView" />
 
 
     <item
         android:id="@+id/filter"
         android:title="Filtrar por..."
         android:icon="@drawable/ic_filter_list_24dp"
-        app:showAsAction="never">
+        app:showAsAction="ifRoom">
         <menu xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto">
             <group android:checkableBehavior="single">

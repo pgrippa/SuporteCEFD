@@ -83,12 +83,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         person1.putPerson(p2);
 */      prefs = getSharedPreferences("user", Context.MODE_PRIVATE);
 
-        if(prefs.getBoolean("logged",false)){
+        /*if(prefs.getBoolean("logged",false)){
             mLoginFormView = findViewById(R.id.login_form);
             mLoginFormView.setVisibility(View.GONE);
             mProgressView = findViewById(R.id.login_progress);
 
-        }
+        }*/
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);

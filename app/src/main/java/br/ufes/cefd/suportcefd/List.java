@@ -1,15 +1,15 @@
 package br.ufes.cefd.suportcefd;
 
 import android.app.SearchManager;
-import android.app.SearchableInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import android.widget.SearchView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -36,7 +36,10 @@ public class List extends AppCompatActivity {
     private ServiceAdapter adapter;
     private int pos=0;
     private static int RESULT_EDIT = 28;
-    TextView empty;
+    private TextView empty;
+    private MenuItem all;
+    private MenuItem active;
+    private MenuItem inactive;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,10 +131,12 @@ public class List extends AppCompatActivity {
         empty = (TextView) findViewById(R.id.t_empty);
         if(serviceList == null || serviceList.isEmpty()){
             System.out.println("LIST NULL ");
-            empty.setText(getString(R.string.t_empty));
+            //empty.setText(getString(R.string.t_empty));
+            empty.setVisibility(View.VISIBLE);
         }else{
             System.out.println("LIST SIZE: "+serviceList.size());
-            empty.setText("");
+            //empty.setText("");
+            empty.setVisibility(View.GONE);
         }
 
         if(adapter!=null) {
@@ -163,12 +168,21 @@ public class List extends AppCompatActivity {
             String query = intent.getStringExtra(SearchManager.QUERY);
             ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
 
-            ArrayList<Service> list = serviceDAO.searchService(query);
+            System.out.println("QUERRY: "+query);
+            if (query.isEmpty()){
+                loadServices("active");
+            }else {
+                ArrayList<Service> list = serviceDAO.searchService(query);
 
-            if(list!=null){
-                adapter.swap(list);
+                if (list != null) {
+                    adapter.swap(list);
+                    empty.setVisibility(View.GONE);
+                }else{
+                    adapter.swap(new ArrayList<Service>());
+                    //empty.setText(getString(R.string.t_empty));
+                    empty.setVisibility(View.VISIBLE);
+                }
             }
-
         }
     }
 
@@ -177,7 +191,6 @@ public class List extends AppCompatActivity {
         super.onActivityResult(requestCode,resultCode,data);
 
         if(requestCode == RESULT_EDIT){
-            System.out.println("RESULT_OK: "+RESULT_OK);
             if(resultCode == RESULT_OK){
                 long id = data.getExtras().getLong("id");
 
@@ -185,15 +198,17 @@ public class List extends AppCompatActivity {
 
                 s.setActive(0);
 
-
                 ServiceDAO dao = new ServiceDAO(getApplicationContext());
                 dao.updateService(id,s);
 
-                serviceList.remove(pos);
+                if(active.isChecked()){
+                    serviceList.remove(pos);
+                }
                 adapter.swap(serviceList);
 
                 if(serviceList == null || serviceList.isEmpty()) {
-                    empty.setText(getString(R.string.t_empty));
+                    //empty.setText(getString(R.string.t_empty));
+                    empty.setVisibility(View.VISIBLE);
                 }
             }
         }
@@ -202,7 +217,6 @@ public class List extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
         int id = item.getItemId();
 
         switch (id){
@@ -225,6 +239,9 @@ public class List extends AppCompatActivity {
                 item.setChecked(true);
                 loadServices("inactive");
                 break;
+
+            default:
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -235,25 +252,40 @@ public class List extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.list_menu, menu);
 
+
+        all = menu.findItem(R.id.filterAll);
+        active = menu.findItem(R.id.filterActive);
+        inactive = menu.findItem(R.id.filterInactive);
+
         // Associate searchable configuration with the SearchView
         SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem item = menu.findItem(R.id.search);
+
+        MenuItemCompat.setOnActionExpandListener(item, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                if(active.isChecked()){
+                    loadServices("active");
+                }else if(inactive.isChecked()){
+                    loadServices("inactive");
+                }else{
+                    loadServices("all");
+                }
+
+                return true;
+            }
+        });
+
         SearchView searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();
+                (SearchView) item.getActionView();
 
-        SearchableInfo searchableInfo = searchManager.getSearchableInfo(getComponentName());
-
-        if(searchableInfo==null){
-            System.out.println("SEARCHINFO NULL");
-        }
-
-        if(searchView == null){
-            System.out.println("SEARCHVIEW NULL");
-        }
-
-        searchView.setSearchableInfo(searchableInfo);
-
-
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         return true;
     }

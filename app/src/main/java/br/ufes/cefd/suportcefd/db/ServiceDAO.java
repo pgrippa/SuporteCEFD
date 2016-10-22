@@ -263,8 +263,8 @@ public class ServiceDAO {
                 Contract.ItemService.COLUMN_ACTIVE
         };
 
-        String selection = Contract.ItemService.COLUMN_PATRIMONY + " MATCH ?";
-        String[] selectionArgs = {query+"*"};
+        String selection = Contract.ItemService.COLUMN_PATRIMONY + " LIKE '"+query+"%'";
+        String[] selectionArgs = {query};
 
         String sortOrder =
                 Contract.ItemService.COLUMN_ACTIVE + " DESC";
@@ -273,11 +273,20 @@ public class ServiceDAO {
                 Contract.ItemService.TABLE_NAME,  // The table to query
                 projection,                               // The columns to return
                 selection,                                // The columns for the WHERE clause
-                selectionArgs,                            // The values for the WHERE clause
+                null,                            // The values for the WHERE clause
                 null,                                     // don't group the rows
                 null,                                     // don't filter by row groups
                 sortOrder                                 // The sort order
         );
+
+        /*
+        Cursor c = db.rawQuery("SELECT * FROM "+Contract.ItemService.TABLE_NAME+" WHERE "
+                +Contract.ItemService.COLUMN_PATRIMONY+" MATCH "+query+" ORDER BY "
+                +Contract.ItemService.COLUMN_ACTIVE+" DESC",null);*/
+
+
+
+
 
         if (c.getCount() == 0) {
             return null;
