@@ -122,7 +122,7 @@ public class ServiceDAO {
         };
 
         String selection = Contract.ItemService.COLUMN_ACTIVE + " LIKE ?";
-        String[] selectionArgs = {String.valueOf(active ? 1 : 0)};
+        String[] selectionArgs = {String.valueOf(active ? Service.ACTIVE : Service.INACTIVE)};
         Cursor c = db.query(
                 Contract.ItemService.TABLE_NAME,  // The table to query
                 projection,                               // The columns to return
@@ -217,7 +217,7 @@ public class ServiceDAO {
         };
 
         String selection = Contract.ItemService.COLUMN_RESPONSIBLE + " LIKE ? AND "+Contract.ItemService.COLUMN_ACTIVE + " LIKE ?";
-        String[] selectionArgs = {String.valueOf(personid),String.valueOf(active ? 1 : 0)};
+        String[] selectionArgs = {String.valueOf(personid),String.valueOf(active ? Service.ACTIVE : Service.INACTIVE)};
 
         Cursor c = db.query(
                 Contract.ItemService.TABLE_NAME,  // The table to query

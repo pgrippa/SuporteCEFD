@@ -9,8 +9,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import br.ufes.cefd.suportcefd.LoginActivity;
-import br.ufes.cefd.suportcefd.MainActivity;
+import br.ufes.cefd.suportcefd.main.LoginActivity;
 import br.ufes.cefd.suportcefd.R;
 
 public class SplashScreen extends AppCompatActivity {

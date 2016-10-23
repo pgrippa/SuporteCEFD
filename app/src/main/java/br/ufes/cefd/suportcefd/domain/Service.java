@@ -21,6 +21,8 @@ public class Service implements Serializable{
     private long id;
     private long idResp;
     private int active;
+    public static int ACTIVE = 1;
+    public static int INACTIVE = 0;
 
     public Service (String p, String l, String t, String d, long idResp){
         this.patrimony = p;
@@ -28,13 +30,12 @@ public class Service implements Serializable{
         this.type = t;
         this.description = d;
         this.idResp = idResp;
-        this.active = 1;
+        this.active = ACTIVE;
 
         this.setEntry(Calendar.getInstance().getTime());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy HH:mm");
         this.setEntryDate(dateFormat.format(getEntry()));
-        this.setRelease(null);
     }
 
     public String getPatrimony() {
@@ -83,6 +84,8 @@ public class Service implements Serializable{
 
     public void setRelease(Date release) {
         this.release = release;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy HH:mm");
+        setReleaseDate(dateFormat.format(release));
     }
 
     public long getId() {

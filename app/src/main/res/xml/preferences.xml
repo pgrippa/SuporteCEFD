@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference android:title="WebService"
+        android:key="webservice"
+        android:summary="Entre com o endereço do Webservice"/>
+    <CheckBoxPreference android:title="Receber Email do Aplicativo"
+        android:defaultValue="true"
+        android:summary="Essa opção se selecionada permite ao aplicativo enviar emails com o status do serviço criado."
+        android:key="sendemail" />
+
+    <CheckBoxPreference android:title="Receber Notificações do Aplicativo"
+        android:defaultValue="false"
+        android:summary="Essa opção se selecionada permite ao aplicativo enviar notificações."
+        android:key="notifications"
+        android:enabled="false"/>
+
+</PreferenceScreen>

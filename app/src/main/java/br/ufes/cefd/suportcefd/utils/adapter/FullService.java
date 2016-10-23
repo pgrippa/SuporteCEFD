@@ -1,4 +1,4 @@
-package br.ufes.cefd.suportcefd;
+package br.ufes.cefd.suportcefd.utils.adapter;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,11 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
-
-import br.ufes.cefd.suportcefd.db.ServiceDAO;
+import br.ufes.cefd.suportcefd.R;
 import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
 import br.ufes.cefd.suportcefd.utils.Util;
@@ -31,6 +28,8 @@ public class FullService extends AppCompatActivity {
     private EditText d;
     private EditText e;
     private EditText t;
+    private TextView dtx;
+    private TextView dts;
     private Button edit;
     private boolean editing = false;
     private Person person;
@@ -42,7 +41,6 @@ public class FullService extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullservice);
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarfull);
 
@@ -92,7 +90,13 @@ public class FullService extends AppCompatActivity {
         TextView dt = (TextView) findViewById(R.id.t_data);
         dt.setText(data);
 
+        dtx = (TextView) findViewById(R.id.t_data2);
+        dts = (TextView) findViewById(R.id.t_datas);
+
+        ImageView status = (ImageView) findViewById(R.id.icon_st);
+
         Util.setIconByType(this,imageView,tipo);
+        Util.setStatusIcon(this,status,service.getActive());
 
         edit = (Button) findViewById(R.id.editbutton);
 
@@ -103,15 +107,18 @@ public class FullService extends AppCompatActivity {
             }
         });
 
-        if(service.getActive()==0){
+        if(service.getActive() == Service.INACTIVE){
             Button close = (Button) findViewById(R.id.closebutton);
             close.setVisibility(View.GONE);
             edit.setVisibility(View.GONE);
+            dts.setText(service.getReleaseDate());
+        }else {
+            dtx.setVisibility(View.GONE);
+            dts.setVisibility(View.GONE);
         }
     }
 
     public void closeService(View v){
-
         Intent intent = new Intent();
 
         intent.putExtra("id",service.getId());

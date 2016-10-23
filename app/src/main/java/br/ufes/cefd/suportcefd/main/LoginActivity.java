@@ -1,4 +1,4 @@
-package br.ufes.cefd.suportcefd;
+package br.ufes.cefd.suportcefd.main;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -32,11 +32,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import br.ufes.cefd.suportcefd.R;
 import br.ufes.cefd.suportcefd.db.PersonDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
 
@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     boolean remember;
     CheckBox ch_remember;
     boolean logged = false;
+    static int RESULT_NEW_USER = 1;
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -268,8 +269,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     public void newUser(View v) {
 
         Intent it = new Intent(LoginActivity.this, NewUser.class);
-        startActivity(it);
+        startActivityForResult(it,RESULT_NEW_USER);
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == RESULT_NEW_USER) {
+            if (resultCode == RESULT_OK) {
+                mEmailView.setText(data.getExtras().getString("email",""));
+            }
+        }
     }
 
     /**

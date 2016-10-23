@@ -1,4 +1,4 @@
-package br.ufes.cefd.suportcefd.utils;
+package br.ufes.cefd.suportcefd.utils.email;
 
 /**
  * Created by pgrippa on 23/09/16.
@@ -18,6 +18,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import android.util.Log;
+
+import br.ufes.cefd.suportcefd.utils.Util;
 
 public class GMail {
 

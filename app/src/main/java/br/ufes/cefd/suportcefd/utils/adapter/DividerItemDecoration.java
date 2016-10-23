@@ -1,4 +1,4 @@
-package br.ufes.cefd.suportcefd.utils;
+package br.ufes.cefd.suportcefd.utils.adapter;
 
 import android.content.Context;
 import android.content.res.TypedArray;

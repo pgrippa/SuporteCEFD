@@ -1,24 +1,27 @@
-package br.ufes.cefd.suportcefd;
+package br.ufes.cefd.suportcefd.main;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import br.ufes.cefd.suportcefd.R;
 import br.ufes.cefd.suportcefd.db.ServiceDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
-import br.ufes.cefd.suportcefd.utils.SpinnerItemAdapter;
-import br.ufes.cefd.suportcefd.utils.SendMailTask;
+import br.ufes.cefd.suportcefd.utils.adapter.SpinnerItemAdapter;
 import br.ufes.cefd.suportcefd.utils.Util;
+import br.ufes.cefd.suportcefd.utils.email.SendMailTask;
 
 public class NewService extends AppCompatActivity {
     private Spinner spinner;
@@ -68,6 +71,10 @@ public class NewService extends AppCompatActivity {
     }
 
     public void saveService(View v){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
+        boolean sendmail = prefs.getBoolean("sendmail",false);
+
         EditText pat = (EditText) findViewById(R.id.t_patrimonio);
         String p = pat.getText().toString();
 
@@ -128,16 +135,16 @@ public class NewService extends AppCompatActivity {
 
         Toast.makeText(getBaseContext(), "Serviço cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
 
-        ArrayList<String> list = new ArrayList<>();
+        if(sendmail) {
+            ArrayList<String> list = new ArrayList<>();
 
-        list.add(em);
+            list.add(em);
 
-        String msg = Util.getMessage(e,person);
+            String msg = Util.getMessage(e, person);
 
-
-
-        /*new SendMailTask(NewService.this).execute(Util.FROMEMAIL,
-                Util.FROMPASSWORD, list, "[CEFD #"+String.format("%07d", id)+"] Novo Chamado SUPORTE CEFD", msg);*/
+            new SendMailTask(NewService.this).execute(Util.FROMEMAIL,
+                    Util.FROMPASSWORD, list, "[CEFD #" + String.format("%07d", id) + "] Novo Chamado SUPORTE CEFD", msg);
+        }
 
         finish();
     }

@@ -1,10 +1,9 @@
-package br.ufes.cefd.suportcefd;
+package br.ufes.cefd.suportcefd.main;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
+import br.ufes.cefd.suportcefd.R;
 import br.ufes.cefd.suportcefd.domain.Person;
 
 public class MainActivity extends AppCompatActivity
@@ -103,6 +103,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent i = new Intent(MainActivity.this, Settings.class);
+            startActivity(i);
             return true;
         }
 
@@ -115,7 +117,31 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-         if (id == R.id.nav_manage) {
+        switch (id){
+            case R.id.nav_manage:
+                Intent i = new Intent(MainActivity.this, Settings.class);
+                startActivity(i);
+                break;
+
+            case R.id.nav_logout:
+                SharedPreferences prefs = getSharedPreferences("user", Context.MODE_PRIVATE);
+                SharedPreferences.Editor ed = prefs.edit();
+                ed.putBoolean("logged",false);
+                ed.commit();
+                Intent it = new Intent(MainActivity.this,LoginActivity.class);
+                startActivity(it);
+                finish();
+                break;
+
+            case R.id.nav_exit:
+                finish();
+                break;
+
+            default:
+                break;
+        }
+
+         /*if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_logout) {
             SharedPreferences prefs = getSharedPreferences("user", Context.MODE_PRIVATE);
@@ -128,7 +154,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_exit) {
             finish();
-        }
+        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

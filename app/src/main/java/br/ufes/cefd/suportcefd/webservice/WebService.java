@@ -1,4 +1,4 @@
-package br.ufes.cefd.suportcefd;
+package br.ufes.cefd.suportcefd.webservice;
 
 /**
  * Created by pgrippa on 10/13/16.
@@ -10,8 +10,6 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
-
-import br.ufes.cefd.suportcefd.LoginActivity;
 
 public class WebService {
     //Namespace of the Webservice - can be found in WSDL
@@ -62,7 +60,7 @@ public class WebService {
 
         } catch (Exception e) {
             //Assign Error Status true in static variable 'errored'
-            LoginActivity.errored = true;
+            //LoginActivity.errored = true;
             e.printStackTrace();
         }
         //Return booleam to calling object

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="66dp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:orientation="vertical"
     tools:showIn="@layout/activity_fullservice"
-    tools:context=".FullService">
+    tools:context=".utils.adapter.FullService">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,10 +37,18 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="XXXXXX"
+                android:paddingLeft="32dp"
                 android:textStyle="bold"
                 android:id="@+id/l_fpatrimonio"
                 android:layout_gravity="center"
                 android:textAlignment="center" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/icon_st"
+                android:src="@drawable/ic_status_ok_24dp"/>
+
         </LinearLayout>
 
     </LinearLayout>
@@ -192,9 +201,37 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_gravity="center"
             android:paddingTop="10dp"
+            android:paddingLeft="24dp"
             android:layout_marginRight="10dp"
             android:text="4 Jul 2001 12:08"
             android:id="@+id/t_data"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp"
+            android:paddingTop="10dp"
+            android:text="Data de Conclusão:"
+            android:textStyle="bold"
+            android:id="@+id/t_data2"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_gravity="center"
+            android:paddingTop="10dp"
+            android:layout_marginRight="10dp"
+            android:text="4 Jul 2001 12:08"
+            android:id="@+id/t_datas"/>
 
     </LinearLayout>
 

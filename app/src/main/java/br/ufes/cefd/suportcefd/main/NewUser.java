@@ -1,5 +1,6 @@
-package br.ufes.cefd.suportcefd;
+package br.ufes.cefd.suportcefd.main;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import br.ufes.cefd.suportcefd.R;
 import br.ufes.cefd.suportcefd.db.PersonDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
 
@@ -76,6 +78,11 @@ public class NewUser extends AppCompatActivity {
         dao.putPerson(person);
 
         Toast.makeText(getBaseContext(), "Cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
+
+        Intent intent = new Intent();
+
+        intent.putExtra("email",person.getEmail());
+        setResult(RESULT_OK,intent);
 
         finish();
 
