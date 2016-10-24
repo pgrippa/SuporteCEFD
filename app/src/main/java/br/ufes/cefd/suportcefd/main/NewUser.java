@@ -22,11 +22,11 @@ public class NewUser extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_user);
+        setContentView(R.layout.content_new_user);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarnewuser);
-        toolbar.setTitle(getString(R.string.t_cadastrar_usuario));
-        setSupportActionBar(toolbar);
+        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarnewuser);
+        toolbar.setTitle(getString(R.string.t_cadastrar_usuario));*/
+        ///setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -81,7 +81,7 @@ public class NewUser extends AppCompatActivity {
 
         Intent intent = new Intent();
 
-        intent.putExtra("email",person.getEmail());
+        intent.putExtra("email",email);
         setResult(RESULT_OK,intent);
 
         finish();

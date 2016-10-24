@@ -77,12 +77,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-       /* Person p1 = new Person("Philipe Grippa","99908-1479", "pgrippa@gmail.com","123456","admin");
-        Person p2 = new Person("Philipe Grippa","99908-1479", "philipegrippa@hotmail.com","123456","user");
+        Person p1 = new Person("Philipe Grippa","99908-1479", "pgrippa@gmail.com","123456","admin");
+        Person p2 = new Person("Philipe Grippa","99908-1479", "philipegrippa@hotmail.com","123456","admin");
         PersonDAO person1 = new PersonDAO(getApplicationContext());
-        person1.putPerson(p1);
+        //person1.putPerson(p1);
         person1.putPerson(p2);
-*/      prefs = getSharedPreferences("user", Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("user", Context.MODE_PRIVATE);
 
         /*if(prefs.getBoolean("logged",false)){
             mLoginFormView = findViewById(R.id.login_form);

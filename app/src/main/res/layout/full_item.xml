@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:id="@+id/icon_st"
-                android:src="@drawable/ic_status_ok_24dp"/>
+                app:srcCompat="@drawable/ic_status_ok_24dp"/>
 
         </LinearLayout>
 

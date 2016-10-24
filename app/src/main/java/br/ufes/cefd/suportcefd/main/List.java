@@ -42,6 +42,7 @@ public class List extends AppCompatActivity {
     private TextView empty;
     private MenuItem active;
     private MenuItem inactive;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +53,13 @@ public class List extends AppCompatActivity {
 
         person = (Person) this.getIntent().getExtras().getSerializable("person");
 
-        loadServices("active");
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
+        toolbar = (Toolbar) findViewById(R.id.toolbar2);
         toolbar.setTitle(R.string.t_listar_servico);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        loadServices("active");
 
         recyclerView = (RecyclerView) findViewById(R.id.c_list);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -95,18 +96,24 @@ public class List extends AppCompatActivity {
             } else {
                 serviceList = serviceDAO.getPersonServices(person.getId(), true);
             }
+            toolbar.setTitle(getString(R.string.lst_active));
+
         } else if (filter.equals("inactive")) {
             if (type.equals("admin")) {
                 serviceList = serviceDAO.getActiveServices(false);
             } else {
                 serviceList = serviceDAO.getPersonServices(person.getId(), false);
             }
+
+            toolbar.setTitle(getString(R.string.lst_inactive));
         } else {
             if (type.equals("admin")) {
                 serviceList = serviceDAO.getServices();
             } else {
                 serviceList = serviceDAO.getPersonAllServices(person.getId());
             }
+
+            toolbar.setTitle(getString(R.string.lst_all));
         }
 
         if (serviceList == null) {
