@@ -18,6 +18,8 @@ public class NewUser extends AppCompatActivity {
     String telephone;
     String email;
     String password;
+    EditText rp;
+    EditText p;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,20 @@ public class NewUser extends AppCompatActivity {
         /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarnewuser);
         toolbar.setTitle(getString(R.string.t_cadastrar_usuario));*/
         ///setSupportActionBar(toolbar);
+        p = (EditText) findViewById(R.id.u_password);
+        rp = (EditText) findViewById(R.id.u_repeatpass);
+        rp.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(!b){
+                    EditText et = (EditText) view;
+                            et.setError(getString(R.string.u_neq_password));
+                    et.requestFocus();
+
+                    p.setError(getString(R.string.u_neq_password));
+                }
+            }
+        });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -61,7 +77,6 @@ public class NewUser extends AppCompatActivity {
             return;
         }
 
-        EditText p = (EditText) findViewById(R.id.u_password);
         password = p.getText().toString();
 
         if(password.isEmpty()){
@@ -69,11 +84,16 @@ public class NewUser extends AppCompatActivity {
             return;
         }
 
+        EditText rp = (EditText) findViewById(R.id.u_repeatpass);
+        String rep = rp.getText().toString();
+
+        if(!password.equals(rep)){
+            return;
+        }
+
         PersonDAO dao = new PersonDAO(getApplicationContext());
 
         Person person = new Person(name, telephone, email, password, "user");
-
-        System.out.println("Person: "+ person.getName()+"\n"+ person.getEmail()+"\n"+ person.getPassword());
 
         dao.putPerson(person);
 

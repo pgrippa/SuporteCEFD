@@ -51,7 +51,7 @@ public class List extends AppCompatActivity {
 
         handleIntent(getIntent());
 
-        person = (Person) this.getIntent().getExtras().getSerializable("person");
+        person = (Person) this.getIntent().getExtras().getSerializable(getString(R.string.lsx_person));
 
         toolbar = (Toolbar) findViewById(R.id.toolbar2);
         toolbar.setTitle(R.string.t_listar_servico);
@@ -59,7 +59,7 @@ public class List extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        loadServices("active");
+        loadServices(getString(R.string.ls_active));
 
         recyclerView = (RecyclerView) findViewById(R.id.c_list);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -90,16 +90,16 @@ public class List extends AppCompatActivity {
 
         ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
 
-        if (filter.equals("active")) {
-            if (type.equals("admin")) {
+        if (filter.equals(getString(R.string.ls_active))) {
+            if (type.equals(Person.TYPE.ADMIN.name())) {
                 serviceList = serviceDAO.getActiveServices(true);
             } else {
                 serviceList = serviceDAO.getPersonServices(person.getId(), true);
             }
             toolbar.setTitle(getString(R.string.lst_active));
 
-        } else if (filter.equals("inactive")) {
-            if (type.equals("admin")) {
+        } else if (filter.equals(getString(R.string.ls_inactive))) {
+            if (type.equals(Person.TYPE.ADMIN.name())) {
                 serviceList = serviceDAO.getActiveServices(false);
             } else {
                 serviceList = serviceDAO.getPersonServices(person.getId(), false);
@@ -107,7 +107,7 @@ public class List extends AppCompatActivity {
 
             toolbar.setTitle(getString(R.string.lst_inactive));
         } else {
-            if (type.equals("admin")) {
+            if (type.equals(Person.TYPE.ADMIN.name())) {
                 serviceList = serviceDAO.getServices();
             } else {
                 serviceList = serviceDAO.getPersonAllServices(person.getId());
@@ -122,11 +122,9 @@ public class List extends AppCompatActivity {
 
         empty = (TextView) findViewById(R.id.t_empty);
         if (serviceList == null || serviceList.isEmpty()) {
-            System.out.println("LIST NULL ");
             //empty.setText(getString(R.string.t_empty));
             empty.setVisibility(View.VISIBLE);
         } else {
-            System.out.println("LIST SIZE: " + serviceList.size());
             //empty.setText("");
             empty.setVisibility(View.GONE);
         }
@@ -140,8 +138,8 @@ public class List extends AppCompatActivity {
         Service e = serviceList.get(position);
 
         Intent it = new Intent(List.this, FullService.class);
-        it.putExtra("service", e);
-        it.putExtra("person", person);
+        it.putExtra(getString(R.string.lsx_service), e);
+        it.putExtra(getString(R.string.lsx_person), person);
         startActivityForResult(it, RESULT_EDIT);
 
     }
@@ -158,9 +156,8 @@ public class List extends AppCompatActivity {
             String query = intent.getStringExtra(SearchManager.QUERY);
             ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
 
-            System.out.println("QUERRY: " + query);
             if (query.isEmpty()) {
-                loadServices("active");
+                loadServices(getString(R.string.ls_active));
             } else {
                 ArrayList<Service> list = serviceDAO.searchService(query);
 
@@ -182,7 +179,7 @@ public class List extends AppCompatActivity {
 
         if (requestCode == RESULT_EDIT) {
             if (resultCode == RESULT_OK) {
-                long id = data.getExtras().getLong("id");
+                long id = data.getExtras().getLong(getString(R.string.lsx_id));
 
                 Service s = serviceList.get(pos);
 
@@ -193,9 +190,9 @@ public class List extends AppCompatActivity {
                 dao.updateService(id, s);
 
                 if (active.isChecked()) {
-                    serviceList.remove(pos);
+                    //serviceList.remove(pos);
+                    loadServices(getString(R.string.ls_active));
                 }
-                adapter.swap(serviceList);
 
                 if (serviceList == null || serviceList.isEmpty()) {
                     //empty.setText(getString(R.string.t_empty));
@@ -218,17 +215,17 @@ public class List extends AppCompatActivity {
 
             case R.id.filterAll:
                 item.setChecked(true);
-                loadServices("all");
+                loadServices(getString(R.string.ls_all));
                 break;
 
             case R.id.filterActive:
                 item.setChecked(true);
-                loadServices("active");
+                loadServices(getString(R.string.ls_active));
                 break;
 
             case R.id.filterInactive:
                 item.setChecked(true);
-                loadServices("inactive");
+                loadServices(getString(R.string.ls_inactive));
                 break;
 
             default:
@@ -260,11 +257,11 @@ public class List extends AppCompatActivity {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                 if (active.isChecked()) {
-                    loadServices("active");
+                    loadServices(getString(R.string.ls_active));
                 } else if (inactive.isChecked()) {
-                    loadServices("inactive");
+                    loadServices(getString(R.string.ls_inactive));
                 } else {
-                    loadServices("all");
+                    loadServices(getString(R.string.ls_all));
                 }
 
                 return true;

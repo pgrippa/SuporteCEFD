@@ -11,6 +11,10 @@ import java.io.Serializable;
 
 public class Person implements Serializable{
 
+    public enum TYPE{
+        ADMIN, USER;
+    }
+
     private long id;
     private String name;
     private String telephone;

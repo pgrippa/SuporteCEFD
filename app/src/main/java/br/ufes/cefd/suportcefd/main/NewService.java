@@ -52,13 +52,13 @@ public class NewService extends AppCompatActivity {
 
         spinner.setAdapter(new SpinnerItemAdapter(this, array_spinner));
 
-        person = (Person) this.getIntent().getExtras().getSerializable("person");
+        person = (Person) this.getIntent().getExtras().getSerializable(getString(R.string.sp_person));
 
         responsible = (AutoCompleteTextView) findViewById(R.id.t_responsavel);
         telephone = (EditText) findViewById(R.id.t_telefone);
         email = (EditText) findViewById(R.id.t_email);
 
-        if(person.getType().equals("user")){
+        if(person.getType().equals(getString(R.string.sp_user))){
             responsible.setText(person.getName());
             responsible.setVisibility(View.GONE);
 
@@ -73,7 +73,7 @@ public class NewService extends AppCompatActivity {
     public void saveService(View v){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
-        boolean sendmail = prefs.getBoolean("sendmail",false);
+        boolean sendmail = prefs.getBoolean(getString(R.string.ns_sendmail),false);
 
         EditText pat = (EditText) findViewById(R.id.t_patrimonio);
         String p = pat.getText().toString();
@@ -133,7 +133,7 @@ public class NewService extends AppCompatActivity {
 
         e.setId(id);
 
-        Toast.makeText(getBaseContext(), "Serviço cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getBaseContext(), getString(R.string.ns_success), Toast.LENGTH_SHORT).show();
 
         if(sendmail) {
             ArrayList<String> list = new ArrayList<>();
@@ -143,7 +143,7 @@ public class NewService extends AppCompatActivity {
             String msg = Util.getMessage(e, person);
 
             new SendMailTask(NewService.this).execute(Util.FROMEMAIL,
-                    Util.FROMPASSWORD, list, "[CEFD #" + String.format("%07d", id) + "] Novo Chamado SUPORTE CEFD", msg);
+                    Util.FROMPASSWORD, list, getString(R.string.ns_suject,id), msg);
         }
 
         finish();

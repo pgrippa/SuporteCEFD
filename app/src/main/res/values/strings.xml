@@ -1,6 +1,32 @@
 <resources>
     <string name="app_name">Suporte CEFD</string>
 
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+    <!-- Classe db.Contract-->
+    <!-- ItemService -->
+    <string name="service_table_name">Service</string>
+    <string name="col_patrimony">patrimony</string>
+    <string name="col_local">local</string>
+    <string name="col_tyoe">type</string>
+    <string name="col_description">description</string>
+    <string name="col_responsible">responsible</string>
+    <string name="col_entrydate">entrydate</string>
+    <string name="col_releasedate">releasedate</string>
+    <string name="col_status">status</string>
+
+    <!-- ItemPerson-->
+    <string name="person_table_name">Person</string>
+    <string name="col_name">name</string>
+    <string name="col_telephone">telephone</string>
+    <string name="col_email">email</string>
+    <string name="col_password">password</string>
+    <string name="col_type">type</string>
+
+
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- Class main.LoginActivity -->
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Senha"</string>
@@ -14,7 +40,30 @@
         completions."
     </string>
     <string name="error_invalid_email_or_password">Email ou senha inválidos!</string>
+    <string name="sp_user">user</string>
+    <string name="sp_email">email</string>
+    <string name="sp_password">password</string>
+    <string name="sp_remember">remember</string>
+    <string name="sp_logged">logged</string>
+    <string name="sp_person">person</string>
 
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+    <!-- Class main.List -->
+    <!-- Service Status -->
+    <string name="ls_active">active</string>
+    <string name="ls_inactive">inactive</string>
+    <string name="ls_all">all</string>
+
+    <!-- Activity Extras -->
+    <string name="lsx_person">person</string>
+    <string name="lsx_service">service</string>
+    <string name="lsx_id">id</string>
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+    <!-- Class main.NewService -->
     <!--tipos de equipamento -->
     <string name="t_desktop">"Desktop"</string>
     <string name="t_notebook">"Notebook"</string>
@@ -23,19 +72,23 @@
     <string name="t_network">"Rede"</string>
     <string name="t_outro">"Outro"</string>
 
+    <string name="ns_success">Serviço cadastrado com sucesso!</string>
+    <string name="ns_suject">[CEFD #%07d] Novo Chamado SUPORTE CEFD</string>
+    <string name="ns_sendmail">sendmail</string>
+
     <!-- Menus-->
     <string name="title_activity_menu">Menu Principal</string>
     <string name="t_cadastrar_servico">Cadastrar Serviço</string>
     <string name="t_listar_servico">Listar Serviços</string>
     <string name="t_cadastrar_usuario">Cadastrar Usuário</string>
 
-    <!-- NewService -->
-
+    <!-- NewUser -->
     <string name="u_name">Nome</string>
     <string name="u_tele">Telefone</string>
     <string name="u_email">Email</string>
     <string name="u_password">Senha</string>
     <string name="u_repeatpass">Repetir Senha</string>
+    <string name="u_neq_password">Senhas devem ser iguais!</string>
 
 
     <!-- Class List -->
@@ -65,3 +118,4 @@
     <string name="search_title">"Pesquisar Serviço"</string>
 
 </resources>
+

@@ -21,9 +21,7 @@ import br.ufes.cefd.suportcefd.domain.Person;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    Button cadastrar;
-    Button listar;
+    
     Person person;
 
     @Override
@@ -33,19 +31,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        person = (Person) this.getIntent().getExtras().getSerializable("person");
-        String type = person.getType();
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                *//*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*//*
-                Intent it = new Intent(MainActivity.this, NewService.class);
-                startActivity(it);
-            }
-        });*/
+        person = (Person) this.getIntent().getExtras().getSerializable(getString(R.string.sp_person));
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -66,14 +52,13 @@ public class MainActivity extends AppCompatActivity
 
     public void newService(View v) {
         Intent it = new Intent(MainActivity.this, NewService.class);
-        it.putExtra("person", person);
+        it.putExtra(getString(R.string.sp_person), person);
         startActivity(it);
     }
 
     public void showList(View v) {
         Intent it = new Intent(MainActivity.this, List.class);
-        it.putExtra("person", person);
-        it.putExtra("mode", "list");
+        it.putExtra(getString(R.string.sp_person), person);
         startActivity(it);
     }
 
@@ -124,9 +109,9 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_logout:
-                SharedPreferences prefs = getSharedPreferences("user", Context.MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences(getString(R.string.sp_user), Context.MODE_PRIVATE);
                 SharedPreferences.Editor ed = prefs.edit();
-                ed.putBoolean("logged",false);
+                ed.putBoolean(getString(R.string.sp_logged),false);
                 ed.commit();
                 Intent it = new Intent(MainActivity.this,LoginActivity.class);
                 startActivity(it);
@@ -140,21 +125,6 @@ public class MainActivity extends AppCompatActivity
             default:
                 break;
         }
-
-         /*if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_logout) {
-            SharedPreferences prefs = getSharedPreferences("user", Context.MODE_PRIVATE);
-            SharedPreferences.Editor ed = prefs.edit();
-            ed.putBoolean("logged",false);
-            ed.commit();
-            Intent it = new Intent(MainActivity.this,LoginActivity.class);
-            startActivity(it);
-            finish();
-
-        } else if (id == R.id.nav_exit) {
-            finish();
-        }*/
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
