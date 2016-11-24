@@ -22,6 +22,10 @@ import br.ufes.cefd.suportcefd.domain.Service;
  */
 public class Util {
 
+    public static final String SERVICE_API_URL = "http://192.168.0.184/service.php";
+    public static final int RESULT_SUCCESS = 0;
+    public static final int RESULT_ERROR= 1;
+
     public static String FROMEMAIL = "suporte.cefd@gmail.com";
     public static String FROMNAME = "Suporte Informática CEFD";
     public static String FROMPASSWORD = "cefd321456987";

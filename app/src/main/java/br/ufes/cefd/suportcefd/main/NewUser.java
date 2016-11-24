@@ -12,6 +12,7 @@ import android.widget.Toast;
 import br.ufes.cefd.suportcefd.R;
 import br.ufes.cefd.suportcefd.db.PersonDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
+import br.ufes.cefd.suportcefd.webservice.Tasks;
 
 public class NewUser extends AppCompatActivity {
     String name;
@@ -20,6 +21,7 @@ public class NewUser extends AppCompatActivity {
     String password;
     EditText rp;
     EditText p;
+    Tasks tasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,13 +93,15 @@ public class NewUser extends AppCompatActivity {
             return;
         }
 
-        PersonDAO dao = new PersonDAO(getApplicationContext());
+        //PersonDAO dao = new PersonDAO(getApplicationContext());
 
         Person person = new Person(name, telephone, email, password, "user");
 
-        dao.putPerson(person);
+        //dao.putPerson(person);
 
-        Toast.makeText(getBaseContext(), "Cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
+        tasks = new Tasks(this);
+        tasks.execNewUser(person);
+        //Toast.makeText(getBaseContext(), "Cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
 
         Intent intent = new Intent();
 

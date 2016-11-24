@@ -36,6 +36,7 @@ public class Service implements Serializable{
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy HH:mm");
         this.setEntryDate(dateFormat.format(getEntry()));
+        this.setReleaseDate("");
     }
 
     public String getPatrimony() {

@@ -22,10 +22,12 @@ import br.ufes.cefd.suportcefd.utils.Util;
 public class ServiceAdapter extends RecyclerView.Adapter {
     private final Context context;
     private final ArrayList<Service> services;
+    private final Person person;
 
-    public ServiceAdapter(Context context, ArrayList<Service> services) {
+    public ServiceAdapter(Context context, ArrayList<Service> services, Person person) {
         this.context = context;
         this.services = services;
+        this.person = person;
     }
 
     @Override
@@ -43,9 +45,7 @@ public class ServiceAdapter extends RecyclerView.Adapter {
 
         Service s = services.get(position);
 
-        Person p = new PersonDAO(context).getPersonById(s.getIdResp());
-
-        holder.getResponsible().setText(p.getName());
+        holder.getResponsible().setText(person.getName());
         holder.getPatrimony().setText(s.getPatrimony());
         Util.setIconByType(context,holder.getIcon(), s.getType());
         Util.setStatusIcon(context,holder.getStatus(), s.getActive());
@@ -62,6 +62,10 @@ public class ServiceAdapter extends RecyclerView.Adapter {
         services.clear();
         services.addAll(list);
         notifyDataSetChanged();
+    }
+
+    public ArrayList<Service> getServices(){
+        return services;
     }
 
     protected class ServiceViewHolder extends RecyclerView.ViewHolder{

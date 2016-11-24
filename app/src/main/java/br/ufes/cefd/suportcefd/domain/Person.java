@@ -3,6 +3,9 @@ package br.ufes.cefd.suportcefd.domain;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
 /**
@@ -38,6 +41,21 @@ public class Person implements Serializable{
         this.setEmail(cursor.getString(3));
         this.setPassword(cursor.getString(4));
         this.setType(cursor.getString(5));
+    }
+
+    public Person(JSONObject jsonObject){
+        try {
+            this.id = Long.parseLong(jsonObject.getString("_ID"));
+            this.name = String.valueOf(jsonObject.getString("name"));
+            this.telephone = String.valueOf(jsonObject.getString("telephone"));
+            this.email = String.valueOf(jsonObject.getString("email"));
+            this.password = String.valueOf(jsonObject.getString("password"));
+            this.type = String.valueOf(jsonObject.getString("type"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public long getId() {

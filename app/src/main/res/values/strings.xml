@@ -46,6 +46,7 @@
     <string name="sp_remember">remember</string>
     <string name="sp_logged">logged</string>
     <string name="sp_person">person</string>
+    <string name="net_error">Erro ao fazer login. Verifique sua conexão com a Internet.</string>
 
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -74,7 +75,7 @@
 
     <string name="ns_success">Serviço cadastrado com sucesso!</string>
     <string name="ns_suject">[CEFD #%07d] Novo Chamado SUPORTE CEFD</string>
-    <string name="ns_sendmail">sendmail</string>
+    <string name="ns_sendmail">sendemail</string>
 
     <!-- Menus-->
     <string name="title_activity_menu">Menu Principal</string>

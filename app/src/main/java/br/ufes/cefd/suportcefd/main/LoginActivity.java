@@ -21,10 +21,21 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import br.ufes.cefd.suportcefd.R;
 import br.ufes.cefd.suportcefd.db.PersonDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
+import br.ufes.cefd.suportcefd.utils.Util;
+import br.ufes.cefd.suportcefd.webservice.AccessServiceAPI;
 
 /**
  * A login screen that offers login via email/password.
@@ -38,7 +49,9 @@ public class LoginActivity extends AppCompatActivity {
     boolean remember;
     CheckBox ch_remember;
     boolean logged = false;
+    boolean neterror = false;
     static int RESULT_NEW_USER = 1;
+    private AccessServiceAPI m_AccessServiceAPI;
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -276,37 +289,43 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            m_AccessServiceAPI = new AccessServiceAPI();
+        }
+
+        @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
+            Map<String, String> postParam = new HashMap<>();
+            postParam.put("action", "getperson");
+            postParam.put("email", mEmail);
+            try{
+                String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(Util.SERVICE_API_URL, postParam);
 
-            //WEB SERVICE
-            //boolean loginStatus = WebService.invokeLoginWS(mEmail,mPassword,"authenticateUser");
+                JSONArray jsonArray = null;
+                try {
+                    jsonArray = new JSONArray(jsonString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
-            /*try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
+                if(jsonArray!=null){
+                    JSONObject jsonObject = new JSONObject(jsonArray.getString(0));
+                    person = new Person(jsonObject);
+                    if (person != null) {
+                        return person.getPassword().equals(mPassword);
+                    }
+                }
+            }
+            catch (java.net.ConnectException e){
+                neterror = true;
+            }
+            catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-
-            }*/
-
-            PersonDAO dao = new PersonDAO(getApplicationContext());
-
-            person = dao.getPersonByEmail(email);
-
-            if (person != null) {
-                return person.getPassword().equals(mPassword);
-            }
-
-            // TODO: register the new account here.
             return false;
         }
 
@@ -323,7 +342,9 @@ public class LoginActivity extends AppCompatActivity {
                 ed.commit();
                 startMain();
 
-            } else {
+            } else if(neterror){
+                Toast.makeText(getBaseContext(), getString(R.string.net_error), Toast.LENGTH_SHORT).show();
+            }else{
                 mEmailView.setError(getString(R.string.error_invalid_email_or_password));
                 mEmailView.requestFocus();
             }

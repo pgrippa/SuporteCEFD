@@ -3,7 +3,6 @@ package br.ufes.cefd.suportcefd.main;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -11,17 +10,13 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
-
-import java.util.ArrayList;
 
 import br.ufes.cefd.suportcefd.R;
 import br.ufes.cefd.suportcefd.db.ServiceDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
 import br.ufes.cefd.suportcefd.utils.adapter.SpinnerItemAdapter;
-import br.ufes.cefd.suportcefd.utils.Util;
-import br.ufes.cefd.suportcefd.utils.email.SendMailTask;
+import br.ufes.cefd.suportcefd.webservice.Tasks;
 
 public class NewService extends AppCompatActivity {
     private Spinner spinner;
@@ -29,6 +24,7 @@ public class NewService extends AppCompatActivity {
     private AutoCompleteTextView responsible;
     private EditText telephone;
     private EditText email;
+    private Tasks tasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +67,9 @@ public class NewService extends AppCompatActivity {
     }
 
     public void saveService(View v){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        boolean sendmail = prefs.getBoolean(getString(R.string.ns_sendmail),false);
+        //boolean sendmail = prefs.getBoolean(getString(R.string.ns_sendmail),false);
 
         EditText pat = (EditText) findViewById(R.id.t_patrimonio);
         String p = pat.getText().toString();
@@ -125,26 +121,29 @@ public class NewService extends AppCompatActivity {
             return;
         }
 
-        Service e = new Service(p,l,t,d,person.getId());
+        Service s = new Service(p,l,t,d,person.getId());
 
-        ServiceDAO dao = new ServiceDAO(getApplicationContext());
+        /*ServiceDAO dao = new ServiceDAO(getApplicationContext());
 
-        long id = dao.putService(e);
+        long id = dao.putService(s);
 
-        e.setId(id);
+        s.setId(id);*/
 
-        Toast.makeText(getBaseContext(), getString(R.string.ns_success), Toast.LENGTH_SHORT).show();
+        tasks = new Tasks(this);
+        tasks.execNewService(s,person);
 
-        if(sendmail) {
+        //Toast.makeText(getBaseContext(), getString(R.string.ns_success), Toast.LENGTH_SHORT).show();
+
+        /*if(sendmail) {
             ArrayList<String> list = new ArrayList<>();
 
             list.add(em);
 
-            String msg = Util.getMessage(e, person);
+            String msg = Util.getMessage(s, person);
 
             new SendMailTask(NewService.this).execute(Util.FROMEMAIL,
                     Util.FROMPASSWORD, list, getString(R.string.ns_suject,id), msg);
-        }
+        }*/
 
         finish();
     }
