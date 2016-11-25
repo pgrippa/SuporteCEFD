@@ -27,12 +27,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import br.ufes.cefd.suportcefd.R;
-import br.ufes.cefd.suportcefd.db.PersonDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.utils.Util;
 import br.ufes.cefd.suportcefd.webservice.AccessServiceAPI;
@@ -80,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         setUpLoginForm();
     }
 
-    private void setUpLoginForm(){
+    private void setUpLoginForm() {
         mEmailView = (EditText) findViewById(R.id.email);
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -108,8 +106,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     protected void restoreInfo() {
-        email = prefs.getString(getString(R.string.sp_email),"");
-        password = prefs.getString(getString(R.string.sp_password),"");
+        email = prefs.getString(getString(R.string.sp_email), "");
+        password = prefs.getString(getString(R.string.sp_password), "");
 
         remember = prefs.getBoolean(getString(R.string.sp_remember), false);
         logged = prefs.getBoolean(getString(R.string.sp_logged), false);
@@ -212,7 +210,7 @@ public class LoginActivity extends AppCompatActivity {
     public void newUser(View v) {
 
         Intent it = new Intent(LoginActivity.this, NewUser.class);
-        startActivityForResult(it,RESULT_NEW_USER);
+        startActivityForResult(it, RESULT_NEW_USER);
 
     }
 
@@ -220,12 +218,12 @@ public class LoginActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == RESULT_NEW_USER) {
+        if (requestCode == RESULT_NEW_USER) {
             if (resultCode == RESULT_OK) {
                 SharedPreferences.Editor ed = prefs.edit();
-                ed.putString("email",data.getExtras().getString("email"));
-                ed.putString("password","");
-                ed.putBoolean("logged",false);
+                ed.putString("email", data.getExtras().getString("email"));
+                ed.putString("password", "");
+                ed.putBoolean("logged", false);
                 ed.commit();
             }
         }
@@ -300,7 +298,7 @@ public class LoginActivity extends AppCompatActivity {
             Map<String, String> postParam = new HashMap<>();
             postParam.put("action", "getperson");
             postParam.put("email", mEmail);
-            try{
+            try {
                 String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(Util.SERVICE_API_URL, postParam);
 
                 JSONArray jsonArray = null;
@@ -310,18 +308,16 @@ public class LoginActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                if(jsonArray!=null){
+                if (jsonArray != null) {
                     JSONObject jsonObject = new JSONObject(jsonArray.getString(0));
                     person = new Person(jsonObject);
                     if (person != null) {
                         return person.getPassword().equals(mPassword);
                     }
                 }
-            }
-            catch (java.net.ConnectException e){
+            } catch (java.net.ConnectException e) {
                 neterror = true;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return false;
             }
@@ -342,9 +338,9 @@ public class LoginActivity extends AppCompatActivity {
                 ed.commit();
                 startMain();
 
-            } else if(neterror){
+            } else if (neterror) {
                 Toast.makeText(getBaseContext(), getString(R.string.net_error), Toast.LENGTH_SHORT).show();
-            }else{
+            } else {
                 mEmailView.setError(getString(R.string.error_invalid_email_or_password));
                 mEmailView.requestFocus();
             }

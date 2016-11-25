@@ -58,7 +58,7 @@ public class ServiceDAO {
         close();
 
         return newRowId;
-    }
+    } //ok
 
     public ArrayList<Service> getServices() {
         open("read");
@@ -105,7 +105,7 @@ public class ServiceDAO {
         close();
 
         return services;
-    }
+    } //ok
 
     public ArrayList<Service> getActiveServices(boolean active) {
         open("read");
@@ -151,7 +151,7 @@ public class ServiceDAO {
         close();
 
         return services;
-    }
+    } //ok
 
     public ArrayList<Service> getPersonAllServices(long personid) {
         open("read");
@@ -200,7 +200,7 @@ public class ServiceDAO {
         close();
 
         return services;
-    }
+    } //ok
 
     public ArrayList<Service> getPersonServices(long personid, boolean active) {
         open("read");
@@ -247,7 +247,7 @@ public class ServiceDAO {
         close();
 
         return services;
-    }
+    } //ok
 
     public ArrayList<Service> searchService(String query) {
         open("read");
@@ -306,7 +306,7 @@ public class ServiceDAO {
         close();
 
         return services;
-    }
+    } //ok
 
     public void updateService(long rowId, Service s) {
         open("write");
@@ -330,7 +330,7 @@ public class ServiceDAO {
                 selectionArgs);
 
         close();
-    }
+    } //ok
 
     public void clean() {
         db.execSQL("delete from " + Contract.ItemService.TABLE_NAME);

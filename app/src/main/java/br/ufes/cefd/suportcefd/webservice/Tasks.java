@@ -61,11 +61,43 @@ public class Tasks extends Activity{
         new TaskNewUser().execute(p.getName(),p.getTelephone(),p.getEmail(),p.getPassword(),p.getType());
     }
 
-    public void execGetActiveServices(RecyclerView recyclerView, Person person, boolean active){
+    public void execGetPersonServices(RecyclerView recyclerView, Person person, boolean active){
         this.recyclerView = recyclerView;
         this.p = person;
-        new TaskGetActiveServices().execute(person.getId()+"", active ? "1":"0");
+        new TaskGetPersonServices().execute(person.getId()+"", active ? "1":"0");
     }
+
+    public void execGetPersonAllServices(RecyclerView recyclerView, Person person){
+        this.recyclerView = recyclerView;
+        this.p = person;
+        new TaskGetPersonServices().execute(person.getId()+"");
+    }
+
+    public void execGetActiveServices(RecyclerView recyclerView, boolean active){
+        this.recyclerView = recyclerView;
+        new TaskGetServices().execute(active ? "1":"0");
+    }
+
+    public void execSearchServices(RecyclerView recyclerView, String query) {
+        this.recyclerView = recyclerView;
+        new TaskSearchServices().execute(query);
+    }
+
+    public void execGetServices(RecyclerView recyclerView){
+        this.recyclerView = recyclerView;
+        new TaskGetServices().execute();
+    }
+
+    public void execUpdateService(Service s, Person p){
+        this.s = s;
+        this.p = p;
+        new TaskUpdateService().execute(s);
+    }
+
+
+    /*
+        ################# TASKS #################
+     */
 
     public class TaskNewService extends AsyncTask<String, Void, Integer> {
 
@@ -170,7 +202,7 @@ public class Tasks extends Activity{
         protected void onPostExecute(Integer integer) {
             super.onPostExecute(integer);
 
-            if(integer==0){
+            if(integer==Util.RESULT_SUCCESS){
                 Toast.makeText(context, "Cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
 
             }else{
@@ -180,7 +212,7 @@ public class Tasks extends Activity{
         }
     }
 
-    public class TaskGetActiveServices extends AsyncTask<String, Void, Integer> {
+    public class TaskGetServices extends AsyncTask<String, Void, Integer> {
 
 
         @Override
@@ -192,9 +224,12 @@ public class Tasks extends Activity{
         @Override
         protected Integer doInBackground(String... params) {
             Map<String, String> postParam = new HashMap<>();
-            postParam.put("action", "getpersonservices");
-            postParam.put("personid", params[0]);
-            postParam.put("active", params[1]);
+            if(params.length==1){
+                postParam.put("action", "getactiveservices");
+                postParam.put("active", params[0]);
+            }else{
+                postParam.put("action", "getservices");
+            }
 
             try{
                 String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(Util.SERVICE_API_URL, postParam);
@@ -204,45 +239,10 @@ public class Tasks extends Activity{
                     jsonArray = new JSONArray(jsonString);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return Util.RESULT_ERROR;
                 }
 
-                String patrimony;
-                String type;
-                String local;
-                String description;
-                String entdate;
-                String reldate;
-                int active;
-                long idperson;
-                int id;
-                serviceList = new ArrayList<>();
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    try {
-                        JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
-                        id = Integer.parseInt(jsonObject.getString("_ID"));
-                        patrimony = String.valueOf(jsonObject.getString("patrimony"));
-                        type= String.valueOf(jsonObject.getString("type"));
-                        local= String.valueOf(jsonObject.getString("local"));
-                        description = String.valueOf(jsonObject.getString("description"));
-                        entdate = String.valueOf(jsonObject.getString("entdate"));
-                        reldate = String.valueOf(jsonObject.getString("reldate"));
-                        active = Integer.parseInt(jsonObject.getString("active"));
-                        idperson = Long.parseLong(jsonObject.getString("idperson"));
-
-                        s = new Service(patrimony, local, type, description, idperson);
-                        s.setEntryDate(entdate);
-                        s.setReleaseDate(reldate);
-                        s.setActive(active);
-                        s.setId(id);
-
-
-                        serviceList.add(s);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                System.out.println("TAMANHO: "+serviceList.size());
+                packServices(jsonArray);
 
                 return Util.RESULT_SUCCESS;
             }catch (Exception e) {
@@ -256,24 +256,233 @@ public class Tasks extends Activity{
         protected void onPostExecute(Integer integer) {
             super.onPostExecute(integer);
 
+            showServices(integer);
+        }
+    }
+
+    public class TaskGetPersonServices extends AsyncTask<String, Void, Integer> {
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            m_AccessServiceAPI = new AccessServiceAPI();
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            Map<String, String> postParam = new HashMap<>();
+            System.out.println("PARAMETROS: "+params.length);
+            if(params.length==2){
+                postParam.put("action", "getpersonservices");
+                postParam.put("personid",params[0]);
+                postParam.put("active", params[1]);
+            }else{
+                postParam.put("action", "getpersonallservices");
+                postParam.put("personid",params[0]);
+            }
+
+            try{
+                String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(Util.SERVICE_API_URL, postParam);
+
+                JSONArray jsonArray = null;
+                try {
+                    jsonArray = new JSONArray(jsonString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return Util.RESULT_ERROR;
+                }
+
+                packServices(jsonArray);
+
+                return Util.RESULT_SUCCESS;
+            }catch (Exception e) {
+                e.printStackTrace();
+                return Util.RESULT_ERROR;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+
+            showServices(integer);
+        }
+    }
+
+    public class TaskSearchServices extends AsyncTask<String, Void, Integer> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            m_AccessServiceAPI = new AccessServiceAPI();
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            Map<String, String> postParam = new HashMap<>();
+
+            postParam.put("action","searchservice");
+            postParam.put("search",params[0]);
+
+            try{
+                String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(Util.SERVICE_API_URL, postParam);
+
+                JSONArray jsonArray = null;
+                try {
+                    jsonArray = new JSONArray(jsonString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return Util.RESULT_ERROR;
+                }
+
+                packServices(jsonArray);
+
+                return Util.RESULT_SUCCESS;
+            }catch (Exception e) {
+                e.printStackTrace();
+                return Util.RESULT_ERROR;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+
+            showServices(integer);
+        }
+    }
+
+    public class TaskUpdateService extends AsyncTask<Service, Void, Integer> {
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            m_AccessServiceAPI = new AccessServiceAPI();
+        }
+
+        @Override
+        protected Integer doInBackground(Service... params) {
+            Map<String, String> postParam = new HashMap<>();
+            postParam.put("action", "updateservice");
+            postParam.put("id", params[0].getId()+"");
+            postParam.put("patrimony", params[0].getPatrimony());
+            postParam.put("type", params[0].getType());
+            postParam.put("local", params[0].getLocal());
+            postParam.put("description", params[0].getDescription());
+            postParam.put("entdate", params[0].getEntryDate());
+            postParam.put("reldate", params[0].getReleaseDate());
+            postParam.put("active", params[0].getActive()+"");
+            postParam.put("idperson", params[0].getIdResp()+"");
+
+
+            for(int i=0; i< postParam.size(); i++){
+                System.out.println(postParam.get(i));
+            }
+
+            try{
+                String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(Util.SERVICE_API_URL, postParam);
+
+                System.out.println("RESULTEEE: "+jsonString);
+
+                if(jsonString.contains("0")){
+                    return Util.RESULT_SUCCESS;
+                }
+
+                return Util.RESULT_ERROR;
+            }catch (Exception e) {
+                e.printStackTrace();
+                return Util.RESULT_ERROR;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+
             if(integer==0){
+                Toast.makeText(context, "Serviço atualizado com sucesso!", Toast.LENGTH_SHORT).show();
 
-                if (serviceList == null) {
-                    serviceList = new ArrayList<>();
-                }
+                /*SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sendmail = prefs.getBoolean("sendemail",false);
+                if(sendmail) {
 
-                recyclerView.setAdapter(new ServiceAdapter(context, serviceList, p));
+                    ArrayList<String> list = new ArrayList<>();
 
-                TextView empty = (TextView) v;
-                if (serviceList.isEmpty()) {
-                    empty.setVisibility(View.VISIBLE);
-                } else {
-                    empty.setVisibility(View.GONE);
-                }
+                    list.add(p.getEmail());
+
+                    String msg = Util.getMessage(s, p);
+
+                    new SendMailTask(Tasks.this).execute(Util.FROMEMAIL,
+                            Util.FROMPASSWORD, list, context.getString(R.string.ns_suject,s.getId()), msg);
+                }*/
+
+            }else{
+                Toast.makeText(context, "Ocorreu um erro ao atualizar o serviço!", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
+
+    private void packServices(JSONArray jsonArray){
+        String patrimony;
+        String type;
+        String local;
+        String description;
+        String entdate;
+        String reldate;
+        int active;
+        long idperson;
+        int id;
+        serviceList = new ArrayList<>();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
+                id = Integer.parseInt(jsonObject.getString("_ID"));
+                patrimony = String.valueOf(jsonObject.getString("patrimony"));
+                type= String.valueOf(jsonObject.getString("type"));
+                local= String.valueOf(jsonObject.getString("local"));
+                description = String.valueOf(jsonObject.getString("description"));
+                entdate = String.valueOf(jsonObject.getString("entdate"));
+                reldate = String.valueOf(jsonObject.getString("reldate"));
+                active = Integer.parseInt(jsonObject.getString("active"));
+                idperson = Long.parseLong(jsonObject.getString("idperson"));
+
+                s = new Service(patrimony, local, type, description, idperson);
+                s.setEntryDate(entdate);
+                s.setReleaseDate(reldate);
+                s.setActive(active);
+                s.setId(id);
+
+
+                serviceList.add(s);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
     }
 
+    private void showServices(Integer integer){
+        //if(integer==Util.RESULT_SUCCESS) {
 
+            if (serviceList == null) {
+                serviceList = new ArrayList<>();
+            }
+
+            TextView empty = (TextView) v;
+            if (serviceList.isEmpty()) {
+                empty.setVisibility(View.VISIBLE);
+            } else {
+                empty.setVisibility(View.GONE);
+            }
+        //}
+
+        //TIRAR PESSOA DAQUI PORQUE VAI FICAR ERRADO QUANDO FOR ADMIN
+        recyclerView.setAdapter(new ServiceAdapter(context, serviceList, p));
+    }
 
 }

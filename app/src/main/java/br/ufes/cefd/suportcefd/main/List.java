@@ -16,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -53,8 +52,15 @@ public class List extends AppCompatActivity {
 
         handleIntent(getIntent());
 
+        init();
+
+        loadServices(getString(R.string.ls_active));
+
+    }
+
+    private void init(){
         person = (Person) this.getIntent().getExtras().getSerializable(getString(R.string.lsx_person));
-        
+
         toolbar = (Toolbar) findViewById(R.id.toolbar2);
         toolbar.setTitle(R.string.t_listar_servico);
         setSupportActionBar(toolbar);
@@ -64,8 +70,6 @@ public class List extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.c_list);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setItemAnimator(new SlideInUpAnimator());
-
-        loadServices(getString(R.string.ls_active));
 
         RecyclerView.LayoutManager layout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layout);
@@ -87,33 +91,29 @@ public class List extends AppCompatActivity {
     private void loadServices(String filter) {
         String type = person.getType();
         empty = (TextView) findViewById(R.id.t_empty);
-        tasks = new Tasks(this,empty, person);
-
-
-        ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
+        tasks = new Tasks(this, empty, person);
 
         if (filter.equals(getString(R.string.ls_active))) {
             if (type.equals(Person.TYPE.ADMIN.name())) {
-                serviceList = serviceDAO.getActiveServices(true);
+                tasks.execGetActiveServices(recyclerView, true);
             } else {
-                //serviceList = serviceDAO.getPersonServices(person.getId(), true);
-                tasks.execGetActiveServices(recyclerView,person,true);
+                tasks.execGetPersonServices(recyclerView, person, true);
             }
             toolbar.setTitle(getString(R.string.lst_active));
 
         } else if (filter.equals(getString(R.string.ls_inactive))) {
             if (type.equals(Person.TYPE.ADMIN.name())) {
-                serviceList = serviceDAO.getActiveServices(false);
+                tasks.execGetActiveServices(recyclerView, false);
             } else {
-                serviceList = serviceDAO.getPersonServices(person.getId(), false);
+                tasks.execGetPersonServices(recyclerView, person, false);
             }
 
             toolbar.setTitle(getString(R.string.lst_inactive));
         } else {
             if (type.equals(Person.TYPE.ADMIN.name())) {
-                serviceList = serviceDAO.getServices();
+                tasks.execGetServices(recyclerView);
             } else {
-                serviceList = serviceDAO.getPersonAllServices(person.getId());
+                tasks.execGetPersonAllServices(recyclerView, person);
             }
 
             toolbar.setTitle(getString(R.string.lst_all));
@@ -190,22 +190,33 @@ public class List extends AppCompatActivity {
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
+
 
             if (query.isEmpty()) {
-                loadServicesDAO(getString(R.string.ls_active));
+                //loadServicesDAO(getString(R.string.ls_active));
+                loadServices(getString(R.string.ls_active));
             } else {
-                ArrayList<Service> list = serviceDAO.searchService(query);
-
-                if (list != null) {
-                    adapter.swap(list);
-                    empty.setVisibility(View.GONE);
-                } else {
-                    adapter.swap(new ArrayList<Service>());
-                    //empty.setText(getString(R.string.t_empty));
-                    empty.setVisibility(View.VISIBLE);
-                }
+                search(query);
             }
+        }
+    }
+
+    private void search(String query){
+        tasks = new Tasks(this, empty, person);
+        tasks.execSearchServices(recyclerView, query);
+    }
+
+    private void searchDAO(String query){
+        ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
+        ArrayList<Service> list = serviceDAO.searchService(query);
+
+        if (list != null) {
+            adapter.swap(list);
+            empty.setVisibility(View.GONE);
+        } else {
+            adapter.swap(new ArrayList<Service>());
+            //empty.setText(getString(R.string.t_empty));
+            empty.setVisibility(View.VISIBLE);
         }
     }
 
@@ -215,19 +226,12 @@ public class List extends AppCompatActivity {
 
         if (requestCode == RESULT_EDIT) {
             if (resultCode == RESULT_OK) {
-                long id = data.getExtras().getLong(getString(R.string.lsx_id));
-
-                Service s = serviceList.get(pos);
-
-                s.setActive(Service.INACTIVE);
-                s.setRelease(Calendar.getInstance().getTime());
-
-                ServiceDAO dao = new ServiceDAO(getApplicationContext());
-                dao.updateService(id, s);
+                update();
 
                 if (active.isChecked()) {
                     //serviceList.remove(pos);
-                    loadServicesDAO(getString(R.string.ls_active));
+                    //loadServicesDAO(getString(R.string.ls_active));
+                    loadServices(getString(R.string.ls_active));
                 }
 
                 if (serviceList == null || serviceList.isEmpty()) {
@@ -236,6 +240,29 @@ public class List extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    private void update(){
+        serviceList = ((ServiceAdapter) recyclerView.getAdapter()).getServices();
+        Service s = serviceList.get(pos);
+
+        s.setActive(Service.INACTIVE);
+        s.setRelease(Calendar.getInstance().getTime());
+
+        tasks = new Tasks(this);
+        tasks.execUpdateService(s, null);
+    }
+
+    private void updateDAO(Intent data){
+        long id = data.getExtras().getLong(getString(R.string.lsx_id));
+
+        Service s = serviceList.get(pos);
+
+        s.setActive(Service.INACTIVE);
+        s.setRelease(Calendar.getInstance().getTime());
+
+        ServiceDAO dao = new ServiceDAO(getApplicationContext());
+        dao.updateService(id, s);
     }
 
 
@@ -251,17 +278,20 @@ public class List extends AppCompatActivity {
 
             case R.id.filterAll:
                 item.setChecked(true);
-                loadServicesDAO(getString(R.string.ls_all));
+                //loadServicesDAO(getString(R.string.ls_all));
+                loadServices(getString(R.string.ls_all));
                 break;
 
             case R.id.filterActive:
                 item.setChecked(true);
-                loadServicesDAO(getString(R.string.ls_active));
+                //loadServicesDAO(getString(R.string.ls_active));
+                loadServices(getString(R.string.ls_active));
                 break;
 
             case R.id.filterInactive:
                 item.setChecked(true);
-                loadServicesDAO(getString(R.string.ls_inactive));
+                //loadServicesDAO(getString(R.string.ls_inactive));
+                loadServices(getString(R.string.ls_inactive));
                 break;
 
             default:
@@ -293,11 +323,14 @@ public class List extends AppCompatActivity {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                 if (active.isChecked()) {
-                    loadServicesDAO(getString(R.string.ls_active));
+                    //loadServicesDAO(getString(R.string.ls_active));
+                    loadServices(getString(R.string.ls_active));
                 } else if (inactive.isChecked()) {
-                    loadServicesDAO(getString(R.string.ls_inactive));
+                    //loadServicesDAO(getString(R.string.ls_inactive));
+                    loadServices(getString(R.string.ls_inactive));
                 } else {
-                    loadServicesDAO(getString(R.string.ls_all));
+                    //loadServicesDAO(getString(R.string.ls_all));
+                    loadServices(getString(R.string.ls_all));
                 }
 
                 return true;
@@ -316,7 +349,7 @@ public class List extends AppCompatActivity {
     public boolean dispatchKeyEvent(KeyEvent event) {
         int action = event.getAction();
         int keyCode = event.getKeyCode();
-        ListView lv;
+
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_UP:
                 if (action == KeyEvent.ACTION_DOWN) {
