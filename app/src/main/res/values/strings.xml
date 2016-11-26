@@ -118,5 +118,8 @@
     <string name="action_editar">Editar</string>
     <string name="search_title">"Pesquisar Serviço"</string>
 
+    <!-- WebService -->
+    <string name="wsurl">http://192.168.0.184/service.php</string>
+
 </resources>
 

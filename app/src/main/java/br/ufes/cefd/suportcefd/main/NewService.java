@@ -7,12 +7,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import java.util.ArrayList;
+
 import br.ufes.cefd.suportcefd.R;
-import br.ufes.cefd.suportcefd.db.ServiceDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
 import br.ufes.cefd.suportcefd.utils.adapter.SpinnerItemAdapter;
@@ -25,6 +28,7 @@ public class NewService extends AppCompatActivity {
     private EditText telephone;
     private EditText email;
     private Tasks tasks;
+    private ArrayList<Person> personList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +67,19 @@ public class NewService extends AppCompatActivity {
 
             email.setText(person.getEmail());
             email.setVisibility(View.GONE);
+        }else{
+            tasks = new Tasks(this);
+            tasks.execGetAllPerson(responsible, telephone, email);
+
+            responsible.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    ArrayAdapter<Person> adapter = (ArrayAdapter<Person>) responsible.getAdapter();
+                    Person p = adapter.getItem(position);
+                    telephone.setText(p.getTelephone());
+                    email.setText(p.getEmail());
+                }
+            });
         }
     }
 

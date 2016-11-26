@@ -3,9 +3,11 @@ package br.ufes.cefd.suportcefd.main;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.AsyncTask;
@@ -14,6 +16,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -21,7 +25,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +44,7 @@ import br.ufes.cefd.suportcefd.webservice.AccessServiceAPI;
 public class LoginActivity extends AppCompatActivity {
 
     SharedPreferences prefs;
+    SharedPreferences configPrefs;
     Person person;
     String email;
     String password;
@@ -50,6 +54,8 @@ public class LoginActivity extends AppCompatActivity {
     boolean neterror = false;
     static int RESULT_NEW_USER = 1;
     private AccessServiceAPI m_AccessServiceAPI;
+    private AlertDialog connError;
+    String wsUrl;
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -72,7 +78,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
+
         prefs = getSharedPreferences(getString(R.string.sp_user), Context.MODE_PRIVATE);
+        configPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Set up the login form.
         setUpLoginForm();
@@ -103,6 +112,8 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        connError = Util.showDialog(this, "Erro de conexão!", "Não foi possivel conectar ao servidor!");
     }
 
     protected void restoreInfo() {
@@ -139,6 +150,30 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            Intent i = new Intent(LoginActivity.this, Settings.class);
+            startActivity(i);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -298,8 +333,11 @@ public class LoginActivity extends AppCompatActivity {
             Map<String, String> postParam = new HashMap<>();
             postParam.put("action", "getperson");
             postParam.put("email", mEmail);
+
+            String url = configPrefs.getString("webservice","");
+
             try {
-                String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(Util.SERVICE_API_URL, postParam);
+                String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(url, postParam);
 
                 JSONArray jsonArray = null;
                 try {
@@ -315,7 +353,7 @@ public class LoginActivity extends AppCompatActivity {
                         return person.getPassword().equals(mPassword);
                     }
                 }
-            } catch (java.net.ConnectException e) {
+            } catch (java.net.ConnectException | IllegalArgumentException e) {
                 neterror = true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -339,7 +377,9 @@ public class LoginActivity extends AppCompatActivity {
                 startMain();
 
             } else if (neterror) {
-                Toast.makeText(getBaseContext(), getString(R.string.net_error), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getBaseContext(), getString(R.string.net_error), Toast.LENGTH_SHORT).show();
+                connError.show();
+
             } else {
                 mEmailView.setError(getString(R.string.error_invalid_email_or_password));
                 mEmailView.requestFocus();

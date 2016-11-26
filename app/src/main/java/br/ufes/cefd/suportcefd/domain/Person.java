@@ -1,6 +1,5 @@
 package br.ufes.cefd.suportcefd.domain;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 
 import org.json.JSONException;
@@ -104,6 +103,11 @@ public class Person implements Serializable{
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString(){
+        return this.getName();
     }
 
 }

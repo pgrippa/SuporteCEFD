@@ -2,7 +2,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <EditTextPreference android:title="WebService"
         android:key="webservice"
-        android:summary="Entre com o endereço do Webservice"/>
+        android:summary="Entre com o endereço do Webservice"
+        android:defaultValue="@string/wsurl"
+        android:singleLine="false" />
     <CheckBoxPreference android:title="Receber Email do Aplicativo"
         android:defaultValue="true"
         android:summary="Essa opção se selecionada permite ao aplicativo enviar emails com o status do serviço criado."

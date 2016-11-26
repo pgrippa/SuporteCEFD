@@ -1,6 +1,8 @@
 package br.ufes.cefd.suportcefd.utils;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.widget.ImageView;
 
 import java.util.Date;
@@ -14,7 +16,7 @@ import br.ufes.cefd.suportcefd.domain.Service;
  */
 public class Util {
 
-    public static final String SERVICE_API_URL = "http://192.168.0.184/service.php";
+    public static String SERVICE_API_URL = "http://192.168.0.184/service.php";
     public static final int RESULT_SUCCESS = 0;
     public static final int RESULT_ERROR= 1;
 
@@ -101,5 +103,29 @@ public class Util {
                 ;
 
         return msg;
+    }
+
+    public static AlertDialog showDialog(Context context, String title, String msg) {
+        //Cria o gerador do AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        //define o titulo
+        builder.setTitle(title);
+        //define a mensagem
+        builder.setMessage(msg);
+        //define um botão como positivo
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface arg0, int arg1) {
+
+            }
+        });
+        return builder.create();
+    }
+
+    public void setWebServiceURL(String url){
+        if(!url.startsWith("http://")){
+            url = "http://"+url;
+        }
+
+        SERVICE_API_URL = url;
     }
 }

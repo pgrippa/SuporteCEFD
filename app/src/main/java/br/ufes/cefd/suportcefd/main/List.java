@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class List extends AppCompatActivity {
     private MenuItem inactive;
     private Toolbar toolbar;
     private Tasks tasks;
+    private View mProgressView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,8 @@ public class List extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        mProgressView = findViewById(R.id.list_progress);
 
         recyclerView = (RecyclerView) findViewById(R.id.c_list);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
@@ -92,6 +96,8 @@ public class List extends AppCompatActivity {
         String type = person.getType();
         empty = (TextView) findViewById(R.id.t_empty);
         tasks = new Tasks(this, empty, person);
+        tasks.setProgressBar(mProgressView);
+        tasks.showProgress(true);
 
         if (filter.equals(getString(R.string.ls_active))) {
             if (type.equals(Person.TYPE.ADMIN.name())) {
@@ -308,6 +314,8 @@ public class List extends AppCompatActivity {
 
         active = menu.findItem(R.id.filterActive);
         inactive = menu.findItem(R.id.filterInactive);
+
+
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager =
