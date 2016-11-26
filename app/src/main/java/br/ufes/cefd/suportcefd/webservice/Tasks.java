@@ -139,11 +139,10 @@ public class Tasks extends Activity {
             try {
                 String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(prefs.getString("webservice", ""), postParam);
 
-                if (jsonString.contains("0")) {
-                    return Util.RESULT_SUCCESS;
-                }
 
-                return Util.RESULT_ERROR;
+                return Integer.parseInt(jsonString.split(";")[0]);
+
+                //return Util.RESULT_ERROR;
             } catch (Exception e) {
                 e.printStackTrace();
                 return Util.RESULT_ERROR;
@@ -155,7 +154,7 @@ public class Tasks extends Activity {
         protected void onPostExecute(Integer integer) {
             super.onPostExecute(integer);
 
-            if (integer == 0) {
+            if (integer != -1) {
                 Toast.makeText(context, context.getString(R.string.ns_success), Toast.LENGTH_SHORT).show();
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -167,6 +166,7 @@ public class Tasks extends Activity {
 
                     list.add(p.getEmail());
 
+                    s.setId(integer);
                     String msg = Util.getMessage(s, p);
 
                     new SendMailTask(Tasks.this).execute(Util.FROMEMAIL,
@@ -241,6 +241,7 @@ public class Tasks extends Activity {
         protected Integer doInBackground(String... params) {
             Map<String, String> postParam = new HashMap<>();
             if (params.length == 1) {
+                System.out.println("ALL ACTIVE SERVICES ");
                 postParam.put("action", "getactiveservices");
                 postParam.put("active", params[0]);
             } else {
@@ -482,15 +483,6 @@ public class Tasks extends Activity {
             responsible.setThreshold(1);
             responsible.setAdapter(new ArrayAdapter<>(context,
                     android.R.layout.simple_dropdown_item_1line, personList));
-
-            /*responsible.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    p = personList.get(position);
-                    telephone.setText(p.getTelephone());
-                    email.setText(p.getEmail());
-                }
-            });*/
         }
     }
 

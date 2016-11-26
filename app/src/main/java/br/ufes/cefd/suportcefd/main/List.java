@@ -94,13 +94,14 @@ public class List extends AppCompatActivity {
 
     private void loadServices(String filter) {
         String type = person.getType();
+        System.out.println("TYPE: "+type);
         empty = (TextView) findViewById(R.id.t_empty);
         tasks = new Tasks(this, empty, person);
         tasks.setProgressBar(mProgressView);
         tasks.showProgress(true);
 
         if (filter.equals(getString(R.string.ls_active))) {
-            if (type.equals(Person.TYPE.ADMIN.name())) {
+            if (type.equals(Person.TYPE.ADMIN.name().toLowerCase())) {
                 tasks.execGetActiveServices(recyclerView, true);
             } else {
                 tasks.execGetPersonServices(recyclerView, person, true);
@@ -108,7 +109,7 @@ public class List extends AppCompatActivity {
             toolbar.setTitle(getString(R.string.lst_active));
 
         } else if (filter.equals(getString(R.string.ls_inactive))) {
-            if (type.equals(Person.TYPE.ADMIN.name())) {
+            if (type.equals(Person.TYPE.ADMIN.name().toLowerCase())) {
                 tasks.execGetActiveServices(recyclerView, false);
             } else {
                 tasks.execGetPersonServices(recyclerView, person, false);
@@ -116,7 +117,7 @@ public class List extends AppCompatActivity {
 
             toolbar.setTitle(getString(R.string.lst_inactive));
         } else {
-            if (type.equals(Person.TYPE.ADMIN.name())) {
+            if (type.equals(Person.TYPE.ADMIN.name().toLowerCase())) {
                 tasks.execGetServices(recyclerView);
             } else {
                 tasks.execGetPersonAllServices(recyclerView, person);
@@ -132,7 +133,7 @@ public class List extends AppCompatActivity {
         ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
 
         if (filter.equals(getString(R.string.ls_active))) {
-            if (type.equals(Person.TYPE.ADMIN.name())) {
+            if (type.equals(Person.TYPE.ADMIN.name().toLowerCase())) {
                 serviceList = serviceDAO.getActiveServices(true);
             } else {
                 serviceList = serviceDAO.getPersonServices(person.getId(), true);
@@ -140,7 +141,7 @@ public class List extends AppCompatActivity {
             toolbar.setTitle(getString(R.string.lst_active));
 
         } else if (filter.equals(getString(R.string.ls_inactive))) {
-            if (type.equals(Person.TYPE.ADMIN.name())) {
+            if (type.equals(Person.TYPE.ADMIN.name().toLowerCase())) {
                 serviceList = serviceDAO.getActiveServices(false);
             } else {
                 serviceList = serviceDAO.getPersonServices(person.getId(), false);
@@ -148,7 +149,7 @@ public class List extends AppCompatActivity {
 
             toolbar.setTitle(getString(R.string.lst_inactive));
         } else {
-            if (type.equals(Person.TYPE.ADMIN.name())) {
+            if (type.equals(Person.TYPE.ADMIN.name().toLowerCase())) {
                 serviceList = serviceDAO.getServices();
             } else {
                 serviceList = serviceDAO.getPersonAllServices(person.getId());
@@ -314,7 +315,6 @@ public class List extends AppCompatActivity {
 
         active = menu.findItem(R.id.filterActive);
         inactive = menu.findItem(R.id.filterInactive);
-
 
 
         // Associate searchable configuration with the SearchView

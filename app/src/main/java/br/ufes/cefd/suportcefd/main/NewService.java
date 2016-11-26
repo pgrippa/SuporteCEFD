@@ -1,8 +1,12 @@
 package br.ufes.cefd.suportcefd.main;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -13,27 +17,45 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import br.ufes.cefd.suportcefd.R;
 import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
+import br.ufes.cefd.suportcefd.utils.Util;
 import br.ufes.cefd.suportcefd.utils.adapter.SpinnerItemAdapter;
+import br.ufes.cefd.suportcefd.webservice.AccessServiceAPI;
 import br.ufes.cefd.suportcefd.webservice.Tasks;
 
 public class NewService extends AppCompatActivity {
     private Spinner spinner;
     private Person person;
+    private Person auxPerson = null;
     private AutoCompleteTextView responsible;
     private EditText telephone;
     private EditText email;
     private Tasks tasks;
     private ArrayList<Person> personList;
+    private AlertDialog alertNewUser;
+    private AccessServiceAPI m_AccessServiceAPI;
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro);
+
+        init();
+    }
+
+    public void init(){
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar1);
         toolbar.setTitle(R.string.t_cadastrar_servico);
@@ -75,18 +97,17 @@ public class NewService extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     ArrayAdapter<Person> adapter = (ArrayAdapter<Person>) responsible.getAdapter();
-                    Person p = adapter.getItem(position);
-                    telephone.setText(p.getTelephone());
-                    email.setText(p.getEmail());
+                    auxPerson = adapter.getItem(position);
+                    telephone.setText(auxPerson.getTelephone());
+                    email.setText(auxPerson.getEmail());
                 }
             });
         }
+
+        alertNewUser = createAlertNewUser("Novo Usuário","Deseja adicionar o usuário "+responsible.getText().toString()+"?");
     }
 
     public void saveService(View v){
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        //boolean sendmail = prefs.getBoolean(getString(R.string.ns_sendmail),false);
 
         EditText pat = (EditText) findViewById(R.id.t_patrimonio);
         String p = pat.getText().toString();
@@ -138,31 +159,66 @@ public class NewService extends AppCompatActivity {
             return;
         }
 
-        Service s = new Service(p,l,t,d,person.getId());
+        Service s1;
+        Person p1;
 
-        /*ServiceDAO dao = new ServiceDAO(getApplicationContext());
+        if(person.getType().equals("admin")){
 
-        long id = dao.putService(s);
+            if(auxPerson==null){
+                alertNewUser.show();
+                return;
+            }
+            s1 = new Service(p,l,t,d,auxPerson.getId());
+            p1 = auxPerson;
 
-        s.setId(id);*/
+        }else{
+            s1 = new Service(p,l,t,d,person.getId());
+            p1 = person;
+        }
 
         tasks = new Tasks(this);
-        tasks.execNewService(s,person);
-
-        //Toast.makeText(getBaseContext(), getString(R.string.ns_success), Toast.LENGTH_SHORT).show();
-
-        /*if(sendmail) {
-            ArrayList<String> list = new ArrayList<>();
-
-            list.add(em);
-
-            String msg = Util.getMessage(s, person);
-
-            new SendMailTask(NewService.this).execute(Util.FROMEMAIL,
-                    Util.FROMPASSWORD, list, getString(R.string.ns_suject,id), msg);
-        }*/
+        tasks.execNewService(s1,p1);
 
         finish();
+    }
+
+    private AlertDialog createAlertNewUser(String title, String msg){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(title);
+
+        builder.setMessage(msg);
+
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface arg0, int arg1) {
+                Intent it = new Intent(NewService.this, NewUser.class);
+
+                Person p1 = new Person(responsible.getText().toString(), telephone.getText().toString(),
+                        email.getText().toString(),"","");
+
+                it.putExtra("person",p1);
+                startActivityForResult(it, 10);
+            }
+        });
+
+        builder.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface arg0, int arg1) {
+                auxPerson=person;
+            }
+        });
+        return builder.create();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 10) {
+            if (resultCode == RESULT_OK) {
+                new TaskGetPerson().execute(email.getText().toString());
+            }
+        }
     }
 
     @Override
@@ -175,4 +231,45 @@ public class NewService extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public class TaskGetPerson extends AsyncTask<String, Void, Integer> {
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            m_AccessServiceAPI = new AccessServiceAPI();
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            Map<String, String> postParam = new HashMap<>();
+            postParam.put("action", "getperson");
+            postParam.put("email", params[0]);
+
+            try {
+                String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(prefs.getString("webservice", ""), postParam);
+
+                JSONArray jsonArray = null;
+                try {
+                    jsonArray = new JSONArray(jsonString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                if (jsonArray != null) {
+                    JSONObject jsonObject = new JSONObject(jsonArray.getString(0));
+                    auxPerson = new Person(jsonObject);
+                }
+
+                return Util.RESULT_SUCCESS;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return Util.RESULT_ERROR;
+            }
+
+        }
+    }
+
 }
+

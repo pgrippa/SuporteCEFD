@@ -55,7 +55,6 @@ public class LoginActivity extends AppCompatActivity {
     static int RESULT_NEW_USER = 1;
     private AccessServiceAPI m_AccessServiceAPI;
     private AlertDialog connError;
-    String wsUrl;
 
     /**
      * Id to identity READ_CONTACTS permission request.

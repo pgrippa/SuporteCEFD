@@ -28,6 +28,11 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        init();
+    }
+
+    public void init(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -37,12 +42,19 @@ public class MainActivity extends AppCompatActivity
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
+
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        if(person.getType().equals("user")){
+            MenuItem item = navigationView.getMenu().findItem(R.id.nav_adduser);
+            item.setVisible(false);
+        }
+
         TextView name = (TextView) navigationView.getHeaderView(0).findViewById(R.id.dr_name);
+
 
         name.setText(person.getName());
 
@@ -89,6 +101,7 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent i = new Intent(MainActivity.this, Settings.class);
+            i.putExtra("type",person.getType());
             startActivity(i);
             return true;
         }
@@ -116,6 +129,11 @@ public class MainActivity extends AppCompatActivity
                 Intent it = new Intent(MainActivity.this,LoginActivity.class);
                 startActivity(it);
                 finish();
+                break;
+
+            case R.id.nav_adduser:
+                Intent it2 = new Intent(MainActivity.this, NewUser.class);
+                startActivity(it2);
                 break;
 
             case R.id.nav_exit:

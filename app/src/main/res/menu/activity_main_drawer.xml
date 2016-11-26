@@ -3,6 +3,13 @@
 
     <group>
         <item
+            android:id="@+id/nav_adduser"
+            android:icon="@drawable/ic_person_add_24dp"
+            android:title="@string/t_cadastrar_usuario" />
+    </group>
+
+    <group>
+        <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_settings_24dp"
             android:title="@string/action_settings" />
