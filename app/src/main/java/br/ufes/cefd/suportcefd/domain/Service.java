@@ -1,5 +1,9 @@
 package br.ufes.cefd.suportcefd.domain;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -37,6 +41,23 @@ public class Service implements Serializable{
         SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy HH:mm");
         this.setEntryDate(dateFormat.format(getEntry()));
         this.setReleaseDate("");
+    }
+
+    public Service(JSONObject jsonObject){
+        try {
+            this.id = Long.parseLong(jsonObject.getString("_ID"));
+            this.patrimony = String.valueOf(jsonObject.getString("patrimony"));
+            this.type = String.valueOf(jsonObject.getString("type"));
+            this.local = String.valueOf(jsonObject.getString("local"));
+            this.description = String.valueOf(jsonObject.getString("description"));
+            this.entryDate = String.valueOf(jsonObject.getString("entdate"));
+            this.releaseDate = String.valueOf(jsonObject.getString("reldate"));
+            this.active = Integer.parseInt(jsonObject.getString("active"));
+            this.idResp = Long.parseLong(jsonObject.getString("idperson"));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getPatrimony() {

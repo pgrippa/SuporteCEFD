@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,12 +18,15 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import br.ufes.cefd.suportcefd.R;
+import br.ufes.cefd.suportcefd.db.PersonDAO;
+import br.ufes.cefd.suportcefd.db.ServiceDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     
     Person person;
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +40,11 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, true);
+
         person = (Person) this.getIntent().getExtras().getSerializable(getString(R.string.sp_person));
+
+        prefs = getSharedPreferences(getString(R.string.sp_user), Context.MODE_PRIVATE);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -75,6 +83,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void finish() {
+
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putBoolean("loaded",false);
+        ed.commit();
+        PersonDAO pd = new PersonDAO(this);
+        ServiceDAO sd = new ServiceDAO(this);
+        pd.clean();
+        sd.clean();
+
+        super.finish();
+
+    }
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -93,12 +116,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent i = new Intent(MainActivity.this, Settings.class);
             i.putExtra("type",person.getType());

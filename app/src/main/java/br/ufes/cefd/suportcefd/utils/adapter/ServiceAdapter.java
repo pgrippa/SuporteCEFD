@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import br.ufes.cefd.suportcefd.R;
-import br.ufes.cefd.suportcefd.db.PersonDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
 import br.ufes.cefd.suportcefd.utils.Util;
@@ -34,6 +33,7 @@ public class ServiceAdapter extends RecyclerView.Adapter {
     private AccessServiceAPI m_AccessServiceAPI;
     private final Context context;
     private final ArrayList<Service> services;
+    private ArrayList<Person> personList;
     private Service service;
     private Person person;
 
@@ -41,6 +41,14 @@ public class ServiceAdapter extends RecyclerView.Adapter {
         this.context = context;
         this.services = services;
         this.person = person;
+        this.personList = null;
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    public ServiceAdapter(Context context, ArrayList<Service> services, ArrayList<Person> personList) {
+        this.context = context;
+        this.services = services;
+        this.personList = personList;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -56,21 +64,34 @@ public class ServiceAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         ServiceViewHolder holder = (ServiceViewHolder) viewHolder;
 
-
         service = services.get(position);
+
+        if(personList != null){
+
+            person = getPerson(service.getIdResp());
+        }
+
         holder.getResponsible().setText(person.getName());
         holder.getPatrimony().setText(service.getPatrimony());
         Util.setIconByType(context,holder.getIcon(), service.getType());
         Util.setStatusIcon(context,holder.getStatus(), service.getActive());
 
-        //new TaskGetPerson(holder).execute();
+    }
 
+    private Person getPerson(long idperson){
+        for(Person p:personList){
+            if(p.getId()==idperson){
+                return p;
+            }
+        }
+
+        return null;
     }
 
     @Override
     public int getItemCount() {
 
-        return services!=null ? services.size() : 0;
+        return services !=null ? services.size() : 0;
     }
 
     public void swap(ArrayList<Service> list){
@@ -83,7 +104,9 @@ public class ServiceAdapter extends RecyclerView.Adapter {
         return services;
     }
 
-
+    public ArrayList<Person> getPersonList(){
+        return personList;
+    }
 
     protected class ServiceViewHolder extends RecyclerView.ViewHolder{
 

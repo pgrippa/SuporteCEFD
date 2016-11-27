@@ -38,6 +38,7 @@ public class ServiceDAO {
         open("write");
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
+        values.put(Contract.ItemService._ID, s.getId());
         values.put(Contract.ItemService.COLUMN_PATRIMONY, s.getPatrimony());
         values.put(Contract.ItemService.COLUMN_LOCAL, s.getLocal());
         values.put(Contract.ItemService.COLUMN_TYPE, s.getType());
@@ -50,10 +51,10 @@ public class ServiceDAO {
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId;
-        newRowId = db.insert(
+        newRowId = db.insertWithOnConflict(
                 Contract.ItemService.TABLE_NAME,
                 null,
-                values);
+                values,SQLiteDatabase.CONFLICT_REPLACE);
 
         close();
 
@@ -333,7 +334,9 @@ public class ServiceDAO {
     } //ok
 
     public void clean() {
-        db.execSQL("delete from " + Contract.ItemService.TABLE_NAME);
+        if(db !=null) {
+            db.execSQL("delete from " + Contract.ItemService.TABLE_NAME);
+        }
     }
 
 }

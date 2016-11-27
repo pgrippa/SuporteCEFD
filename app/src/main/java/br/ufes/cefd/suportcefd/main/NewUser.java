@@ -106,7 +106,6 @@ public class NewUser extends AppCompatActivity {
             return;
         }
 
-
         Person person = new Person(name, telephone, email, password, "user");
 
         tasks = new Tasks(this);

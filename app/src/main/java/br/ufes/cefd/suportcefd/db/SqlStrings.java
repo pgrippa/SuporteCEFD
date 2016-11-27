@@ -13,7 +13,7 @@ public class SqlStrings {
 
     public static final String SQL_CREATE_SERVICE_ENTRIES =
             "CREATE TABLE " + Contract.ItemService.TABLE_NAME + " (" +
-                    Contract.ItemService._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL"+ COMMA_SEP +
+                    Contract.ItemService._ID + " INTEGER PRIMARY KEY NOT NULL"+ COMMA_SEP +
                     Contract.ItemService.COLUMN_PATRIMONY + TEXT_TYPE + COMMA_SEP +
                     Contract.ItemService.COLUMN_TYPE + TEXT_TYPE + COMMA_SEP +
                     Contract.ItemService.COLUMN_LOCAL + TEXT_TYPE + COMMA_SEP +
@@ -27,7 +27,7 @@ public class SqlStrings {
 
     public static final String SQL_CREATE_PERSON_ENTRIES =
             "CREATE TABLE " + Contract.ItemPerson.TABLE_NAME + " (" +
-                    Contract.ItemPerson._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                    Contract.ItemPerson._ID + " INTEGER PRIMARY KEY NOT NULL," +
                     Contract.ItemPerson.COLUMN_NAME + TEXT_TYPE + COMMA_SEP +
                     Contract.ItemPerson.COLUMN_TELEPHONE + TEXT_TYPE + COMMA_SEP +
                     Contract.ItemPerson.COLUMN_EMAIL + TEXT_TYPE + COMMA_SEP +

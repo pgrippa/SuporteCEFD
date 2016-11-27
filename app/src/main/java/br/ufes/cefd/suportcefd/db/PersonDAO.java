@@ -39,6 +39,7 @@ public class PersonDAO {
         open("write");
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
+        values.put(Contract.ItemPerson._ID, p.getId());
         values.put(Contract.ItemPerson.COLUMN_NAME, p.getName());
         values.put(Contract.ItemPerson.COLUMN_TELEPHONE,p.getTelephone());
         values.put(Contract.ItemPerson.COLUMN_EMAIL,p.getEmail());
@@ -48,10 +49,10 @@ public class PersonDAO {
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId;
-        newRowId = db.insert(
+        newRowId = db.insertWithOnConflict(
                 Contract.ItemPerson.TABLE_NAME,
                 null,
-                values);
+                values,SQLiteDatabase.CONFLICT_REPLACE);
 
         close();
 
@@ -185,7 +186,8 @@ public class PersonDAO {
         ArrayList<Person> list = new ArrayList<>();
 
         for(c.moveToFirst(); !c.isAfterLast(); c.moveToNext()){
-            Person p = new Person(c);
+            Person p = new Person(c.getString(1),c.getString(2),c.getString(3),c.getString(4),c.getString(5));
+            p.setId(c.getLong(0));
             list.add(p);
         }
 
@@ -216,7 +218,9 @@ public class PersonDAO {
 
     public void clean()
     {
-        db.execSQL("delete from " + Contract.ItemPerson.TABLE_NAME);
+        if(db !=null) {
+            db.execSQL("delete from " + Contract.ItemPerson.TABLE_NAME);
+        }
     }
 
 }

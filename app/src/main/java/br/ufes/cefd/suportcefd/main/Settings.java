@@ -16,17 +16,9 @@ public class Settings extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         SettingsFragment settingsFragment = new SettingsFragment();
-
-        Bundle b = this.getIntent().getExtras();
-
-        if(b!=null){
-            String type = b.getString("type");
-            if(type.equals("user")){
-                EditTextPreference preference = (EditTextPreference) settingsFragment.findPreference("webservice");
-                preference.setEnabled(false);
-            }
-        }
+        settingsFragment.setArguments(getIntent().getExtras());
 
         getFragmentManager().beginTransaction().replace(android.R.id.content, settingsFragment).commit();
     }
@@ -39,6 +31,12 @@ public class Settings extends PreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
 
+            Bundle b = getArguments();
+            if(b!=null){
+                String type = b.getString("type");
+                EditTextPreference preference = (EditTextPreference) findPreference("webservice");
+                preference.setEnabled(type.equals("user") ? false : true);
+            }
         }
     }
 

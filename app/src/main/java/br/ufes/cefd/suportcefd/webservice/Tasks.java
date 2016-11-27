@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import br.ufes.cefd.suportcefd.R;
+import br.ufes.cefd.suportcefd.db.PersonDAO;
+import br.ufes.cefd.suportcefd.db.ServiceDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
 import br.ufes.cefd.suportcefd.utils.Util;
@@ -98,6 +100,11 @@ public class Tasks extends Activity {
         new TaskGetServices().execute();
     }
 
+    public void execGetServicesAdmin(RecyclerView recyclerView) {
+        this.recyclerView = recyclerView;
+        new TaskGetServicesAdmin().execute();
+    }
+
     public void execUpdateService(Service s, Person p) {
         this.s = s;
         this.p = p;
@@ -139,10 +146,8 @@ public class Tasks extends Activity {
             try {
                 String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(prefs.getString("webservice", ""), postParam);
 
-
                 return Integer.parseInt(jsonString.split(";")[0]);
 
-                //return Util.RESULT_ERROR;
             } catch (Exception e) {
                 e.printStackTrace();
                 return Util.RESULT_ERROR;
@@ -159,6 +164,10 @@ public class Tasks extends Activity {
 
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 boolean sendmail = prefs.getBoolean("sendemail", false);
+                s.setId(integer);
+
+                ServiceDAO dao = new ServiceDAO(context);
+                dao.putService(s);
 
                 if (sendmail) {
 
@@ -166,7 +175,6 @@ public class Tasks extends Activity {
 
                     list.add(p.getEmail());
 
-                    s.setId(integer);
                     String msg = Util.getMessage(s, p);
 
                     new SendMailTask(Tasks.this).execute(Util.FROMEMAIL,
@@ -202,11 +210,8 @@ public class Tasks extends Activity {
             try {
                 String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(prefs.getString("webservice", ""), postParam);
 
-                if (jsonString.contains("0")) {
-                    return Util.RESULT_SUCCESS;
-                }
+                return Integer.parseInt(jsonString.split(";")[0]);
 
-                return Util.RESULT_ERROR;
             } catch (Exception e) {
                 e.printStackTrace();
                 return Util.RESULT_ERROR;
@@ -218,7 +223,10 @@ public class Tasks extends Activity {
         protected void onPostExecute(Integer integer) {
             super.onPostExecute(integer);
 
-            if (integer == Util.RESULT_SUCCESS) {
+            if (integer !=-1) {
+                PersonDAO dao = new PersonDAO(context);
+                dao.putPerson(p);
+
                 Toast.makeText(context, "Cadastrado com sucesso!", Toast.LENGTH_SHORT).show();
 
             } else {
@@ -241,7 +249,7 @@ public class Tasks extends Activity {
         protected Integer doInBackground(String... params) {
             Map<String, String> postParam = new HashMap<>();
             if (params.length == 1) {
-                System.out.println("ALL ACTIVE SERVICES ");
+
                 postParam.put("action", "getactiveservices");
                 postParam.put("active", params[0]);
             } else {
@@ -274,6 +282,56 @@ public class Tasks extends Activity {
             super.onPostExecute(integer);
 
             showServices(integer);
+        }
+    }
+
+    public class TaskGetServicesAdmin extends AsyncTask<String, Void, Integer> {
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            m_AccessServiceAPI = new AccessServiceAPI();
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            Map<String, String> postParam = new HashMap<>();
+
+            postParam.put("action", "getadminservices");
+
+
+            try {
+                String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(prefs.getString("webservice", ""), postParam);
+
+                String[] db = jsonString.split(";person;");
+
+                JSONArray serviceJsonArray = null;
+                JSONArray personJsonArray = null;
+                try {
+                    serviceJsonArray = new JSONArray(db[0]);
+                    personJsonArray = new JSONArray(db[1]);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return Util.RESULT_ERROR;
+                }
+
+                packServicesDAO(serviceJsonArray);
+                packPeopleDAO(personJsonArray);
+
+                return Util.RESULT_SUCCESS;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return Util.RESULT_ERROR;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+
+            showServicesAdmin(integer);
         }
     }
 
@@ -487,36 +545,11 @@ public class Tasks extends Activity {
     }
 
     private void packServices(JSONArray jsonArray) {
-        String patrimony;
-        String type;
-        String local;
-        String description;
-        String entdate;
-        String reldate;
-        int active;
-        long idperson;
-        int id;
         serviceList = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
-                id = Integer.parseInt(jsonObject.getString("_ID"));
-                patrimony = String.valueOf(jsonObject.getString("patrimony"));
-                type = String.valueOf(jsonObject.getString("type"));
-                local = String.valueOf(jsonObject.getString("local"));
-                description = String.valueOf(jsonObject.getString("description"));
-                entdate = String.valueOf(jsonObject.getString("entdate"));
-                reldate = String.valueOf(jsonObject.getString("reldate"));
-                active = Integer.parseInt(jsonObject.getString("active"));
-                idperson = Long.parseLong(jsonObject.getString("idperson"));
-
-                s = new Service(patrimony, local, type, description, idperson);
-                s.setEntryDate(entdate);
-                s.setReleaseDate(reldate);
-                s.setActive(active);
-                s.setId(id);
-
-
+                s = new Service(jsonObject);
                 serviceList.add(s);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -540,6 +573,44 @@ public class Tasks extends Activity {
         }
     }
 
+    private void packServicesDAO(JSONArray jsonArray) {
+        serviceList = new ArrayList<>();
+        ServiceDAO dao = new ServiceDAO(context);
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
+                s = new Service(jsonObject);
+
+                if(s.getActive()==1){
+                    serviceList.add(s);
+                }
+
+                dao.putService(s);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void packPeopleDAO(JSONArray jsonArray) {
+
+        personList = new ArrayList<>();
+        PersonDAO dao = new PersonDAO(context);
+        for (int i = 0; i < jsonArray.length(); i++) {
+            try {
+                JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
+
+                p = new Person(jsonObject);
+                personList.add(p);
+                dao.putPerson(p);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void showServices(Integer integer) {
         showProgress(false);
 
@@ -554,8 +625,24 @@ public class Tasks extends Activity {
             empty.setVisibility(View.GONE);
         }
 
-        //TIRAR PESSOA DAQUI PORQUE VAI FICAR ERRADO QUANDO FOR ADMIN
         recyclerView.setAdapter(new ServiceAdapter(context, serviceList, p));
+    }
+
+    private void showServicesAdmin(Integer integer) {
+        showProgress(false);
+
+        if (serviceList == null) {
+            serviceList = new ArrayList<>();
+        }
+
+        TextView empty = (TextView) v;
+        if (serviceList.isEmpty()) {
+            empty.setVisibility(View.VISIBLE);
+        } else {
+            empty.setVisibility(View.GONE);
+        }
+
+        recyclerView.setAdapter(new ServiceAdapter(context, serviceList, personList));
     }
 
     public void setProgressBar(View mProgress) {

@@ -3,6 +3,7 @@ package br.ufes.cefd.suportcefd.main;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,13 +17,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import br.ufes.cefd.suportcefd.R;
+import br.ufes.cefd.suportcefd.db.PersonDAO;
 import br.ufes.cefd.suportcefd.utils.adapter.FullService;
 import br.ufes.cefd.suportcefd.db.ServiceDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
@@ -37,7 +38,7 @@ public class List extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<Service> serviceList;
     private Person person;
-    private ServiceAdapter adapter;
+    private ServiceAdapter adapter = null;
     private int pos = 0;
     private static int RESULT_EDIT = 28;
     private TextView empty;
@@ -46,6 +47,8 @@ public class List extends AppCompatActivity {
     private Toolbar toolbar;
     private Tasks tasks;
     private View mProgressView;
+    private SharedPreferences prefs;
+    private boolean loaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +59,18 @@ public class List extends AppCompatActivity {
 
         init();
 
-        loadServices(getString(R.string.ls_active));
+        if(person.getType().equals("admin")){
+            loadAdminDAO(getString(R.string.ls_active));
+        }else{
+            loadServices(getString(R.string.ls_active));
+        }
 
     }
 
     private void init(){
         person = (Person) this.getIntent().getExtras().getSerializable(getString(R.string.lsx_person));
+
+        prefs = getSharedPreferences(getString(R.string.sp_user), Context.MODE_PRIVATE);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar2);
         toolbar.setTitle(R.string.t_listar_servico);
@@ -94,7 +103,6 @@ public class List extends AppCompatActivity {
 
     private void loadServices(String filter) {
         String type = person.getType();
-        System.out.println("TYPE: "+type);
         empty = (TextView) findViewById(R.id.t_empty);
         tasks = new Tasks(this, empty, person);
         tasks.setProgressBar(mProgressView);
@@ -176,6 +184,62 @@ public class List extends AppCompatActivity {
         }
     }
 
+    private void loadAdminDAO(String filter) {
+        ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
+        PersonDAO personDAO = new PersonDAO(this);
+
+        SharedPreferences.Editor ed = prefs.edit();
+        loaded = prefs.getBoolean("loaded",false);
+        if(loaded) {
+            adapter = (ServiceAdapter) recyclerView.getAdapter();
+            if(adapter == null){
+                ArrayList<Person> personList = personDAO.getPersonList();
+                adapter = new ServiceAdapter(this, new ArrayList<Service>(), personList);
+                recyclerView.setAdapter(adapter);
+            }
+
+            if (filter.equals(getString(R.string.ls_active))) {
+                serviceList = serviceDAO.getActiveServices(true);
+
+                toolbar.setTitle(getString(R.string.lst_active));
+
+            } else if (filter.equals(getString(R.string.ls_inactive))) {
+                serviceList = serviceDAO.getActiveServices(false);
+
+                toolbar.setTitle(getString(R.string.lst_inactive));
+            } else {
+                serviceList = serviceDAO.getServices();
+                toolbar.setTitle(getString(R.string.lst_all));
+            }
+
+            if (serviceList == null) {
+                serviceList = new ArrayList<>();
+            }
+
+            empty = (TextView) findViewById(R.id.t_empty);
+            if (serviceList == null || serviceList.isEmpty()) {
+                //empty.setText(getString(R.string.t_empty));
+                empty.setVisibility(View.VISIBLE);
+            } else {
+                //empty.setText("");
+                empty.setVisibility(View.GONE);
+            }
+
+            if (adapter != null) {
+                adapter.swap(serviceList);
+            }
+
+        }else{
+            empty = (TextView) findViewById(R.id.t_empty);
+            tasks = new Tasks(this, empty, null);
+            tasks.setProgressBar(mProgressView);
+            tasks.showProgress(true);
+            tasks.execGetServicesAdmin(recyclerView);
+            ed.putBoolean("loaded",true);
+            ed.commit();
+        }
+    }
+
     private void clickItem(int position) {
         serviceList = ((ServiceAdapter) recyclerView.getAdapter()).getServices();
         Service e = serviceList.get(position);
@@ -200,8 +264,12 @@ public class List extends AppCompatActivity {
 
 
             if (query.isEmpty()) {
-                //loadServicesDAO(getString(R.string.ls_active));
-                loadServices(getString(R.string.ls_active));
+
+                if(person.getType().equals("admin")){
+                    loadAdminDAO(getString(R.string.ls_active));
+                }else {
+                    loadServices(getString(R.string.ls_active));
+                }
             } else {
                 search(query);
             }
@@ -210,6 +278,7 @@ public class List extends AppCompatActivity {
 
     private void search(String query){
         tasks = new Tasks(this, empty, person);
+        tasks.setProgressBar(mProgressView);
         tasks.execSearchServices(recyclerView, query);
     }
 
@@ -236,9 +305,11 @@ public class List extends AppCompatActivity {
                 update();
 
                 if (active.isChecked()) {
-                    //serviceList.remove(pos);
-                    //loadServicesDAO(getString(R.string.ls_active));
-                    loadServices(getString(R.string.ls_active));
+                    if(person.getType().equals("admin")) {
+                        loadAdminDAO(getString(R.string.ls_active));
+                    }else {
+                        loadServices(getString(R.string.ls_active));
+                    }
                 }
 
                 if (serviceList == null || serviceList.isEmpty()) {
@@ -250,6 +321,8 @@ public class List extends AppCompatActivity {
     }
 
     private void update(){
+        ServiceDAO dao = new ServiceDAO(this);
+
         serviceList = ((ServiceAdapter) recyclerView.getAdapter()).getServices();
         Service s = serviceList.get(pos);
 
@@ -258,6 +331,7 @@ public class List extends AppCompatActivity {
 
         tasks = new Tasks(this);
         tasks.execUpdateService(s, null);
+        dao.updateService(s.getId(),s);
     }
 
     private void updateDAO(Intent data){
@@ -285,20 +359,29 @@ public class List extends AppCompatActivity {
 
             case R.id.filterAll:
                 item.setChecked(true);
-                //loadServicesDAO(getString(R.string.ls_all));
-                loadServices(getString(R.string.ls_all));
+                if(person.getType().equals("admin")) {
+                    loadAdminDAO(getString(R.string.ls_all));
+                }else {
+                    loadServices(getString(R.string.ls_all));
+                }
                 break;
 
             case R.id.filterActive:
                 item.setChecked(true);
-                //loadServicesDAO(getString(R.string.ls_active));
-                loadServices(getString(R.string.ls_active));
+                if(person.getType().equals("admin")) {
+                    loadAdminDAO(getString(R.string.ls_active));
+                }else {
+                    loadServices(getString(R.string.ls_active));
+                }
                 break;
 
             case R.id.filterInactive:
                 item.setChecked(true);
-                //loadServicesDAO(getString(R.string.ls_inactive));
-                loadServices(getString(R.string.ls_inactive));
+                if(person.getType().equals("admin")) {
+                    loadAdminDAO(getString(R.string.ls_inactive));
+                }else {
+                    loadServices(getString(R.string.ls_inactive));
+                }
                 break;
 
             default:
@@ -331,14 +414,23 @@ public class List extends AppCompatActivity {
             @Override
             public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                 if (active.isChecked()) {
-                    //loadServicesDAO(getString(R.string.ls_active));
-                    loadServices(getString(R.string.ls_active));
+                    if(person.getType().equals("admin")) {
+                        loadAdminDAO(getString(R.string.ls_active));
+                    }else {
+                        loadServices(getString(R.string.ls_active));
+                    }
                 } else if (inactive.isChecked()) {
-                    //loadServicesDAO(getString(R.string.ls_inactive));
-                    loadServices(getString(R.string.ls_inactive));
+                    if(person.getType().equals("admin")) {
+                        loadAdminDAO(getString(R.string.ls_inactive));
+                    }else {
+                        loadServices(getString(R.string.ls_inactive));
+                    }
                 } else {
-                    //loadServicesDAO(getString(R.string.ls_all));
-                    loadServices(getString(R.string.ls_all));
+                    if(person.getType().equals("admin")) {
+                        loadAdminDAO(getString(R.string.ls_all));
+                    }else {
+                        loadServices(getString(R.string.ls_all));
+                    }
                 }
 
                 return true;

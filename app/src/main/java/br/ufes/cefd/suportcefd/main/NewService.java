@@ -216,7 +216,13 @@ public class NewService extends AppCompatActivity {
 
         if (requestCode == 10) {
             if (resultCode == RESULT_OK) {
-                new TaskGetPerson().execute(email.getText().toString());
+                Bundle b = data.getExtras();
+                String nemail = email.getText().toString();
+                if(b!=null){
+                    nemail = data.getExtras().getString("email");
+                }
+
+                new TaskGetPerson().execute(nemail);
             }
         }
     }

@@ -42,13 +42,15 @@ public class FullService extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullservice);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarfull);
-
         person = (Person) this.getIntent().getExtras().getSerializable("person");
         service = (Service) this.getIntent().getExtras().getSerializable("service");
 
+        init();
+    }
+
+    private void init(){
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarfull);
         long id = service.getId();
-        System.out.println("SERVICE ACTIVE FULL: "+service.getActive());
 
         if(toolbar != null){
             toolbar.setTitle("Chamado nº "+String.format("%07d", id));
@@ -116,6 +118,12 @@ public class FullService extends AppCompatActivity {
             dtx.setVisibility(View.GONE);
             dts.setVisibility(View.GONE);
         }
+
+        if(person.getType().equals("user")){
+            edit.setVisibility(View.GONE);
+            Button close = (Button) findViewById(R.id.closebutton);
+            close.setVisibility(View.GONE);
+        }
     }
 
     public void closeService(View v){
@@ -146,6 +154,10 @@ public class FullService extends AppCompatActivity {
         if(service.getActive()==1){
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.menu_full_service, menu);
+
+            MenuItem menuItem = menu.findItem(R.id.action_edit);
+            menuItem.setVisible(person.getType().equals("user") ? false : true);
+
             return true;
         }
         return true;
