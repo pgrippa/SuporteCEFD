@@ -50,10 +50,12 @@ public class NewUser extends AppCompatActivity {
             public void onFocusChange(View view, boolean b) {
                 if(!b){
                     EditText et = (EditText) view;
-                    et.setError(getString(R.string.u_neq_password));
-                    et.requestFocus();
+                    if(!et.getText().toString().equals(p.getText().toString())) {
+                        et.setError(getString(R.string.u_neq_password));
+                        et.requestFocus();
 
-                    p.setError(getString(R.string.u_neq_password));
+                        p.setError(getString(R.string.u_neq_password));
+                    }
                 }
             }
         });

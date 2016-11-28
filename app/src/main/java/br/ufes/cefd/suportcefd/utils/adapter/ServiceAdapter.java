@@ -36,6 +36,8 @@ public class ServiceAdapter extends RecyclerView.Adapter {
     private ArrayList<Person> personList;
     private Service service;
     private Person person;
+    private ImageView status;
+    private ImageView icon;
 
     public ServiceAdapter(Context context, ArrayList<Service> services, Person person) {
         this.context = context;
@@ -49,6 +51,7 @@ public class ServiceAdapter extends RecyclerView.Adapter {
         this.context = context;
         this.services = services;
         this.personList = personList;
+        this.person = null;
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
@@ -73,19 +76,25 @@ public class ServiceAdapter extends RecyclerView.Adapter {
 
         holder.getResponsible().setText(person.getName());
         holder.getPatrimony().setText(service.getPatrimony());
-        Util.setIconByType(context,holder.getIcon(), service.getType());
-        Util.setStatusIcon(context,holder.getStatus(), service.getActive());
+        setIconByType(context, holder.getIcon(), service.getType());
+        setStatusIcon(holder.getStatus(), service.getActive());
 
     }
 
     private Person getPerson(long idperson){
-        for(Person p:personList){
+        Person p;
+        for(int i=0; i< personList.size(); i++){
+            p = personList.get(i);
             if(p.getId()==idperson){
                 return p;
             }
         }
 
         return null;
+    }
+
+    public void setPersonList(ArrayList<Person> personList){
+        this.personList = personList;
     }
 
     @Override
@@ -106,6 +115,39 @@ public class ServiceAdapter extends RecyclerView.Adapter {
 
     public ArrayList<Person> getPersonList(){
         return personList;
+    }
+
+    public void setIconByType(Context context, ImageView imageView, String tipo){
+        if (tipo.equals(context.getString(R.string.t_desktop))) {
+            imageView.setImageResource(R.drawable.desktop);
+        } else if (tipo.equals(context.getString(R.string.t_notebook))) {
+            imageView.setImageResource(R.drawable.notebook);
+        } else if (tipo.equals(context.getString(R.string.t_impressora))) {
+            imageView.setImageResource(R.drawable.printer);
+        } else if (tipo.equals(context.getString(R.string.t_monitor))) {
+            imageView.setImageResource(R.drawable.monitor);
+        }else if (tipo.equals(context.getString(R.string.t_network))) {
+            imageView.setImageResource(R.drawable.network2);
+        }else{
+            imageView.setImageResource(R.drawable.maintenance);
+        }
+    }
+
+    public void setStatusIcon(ImageView imageView, int status){
+        switch (status){
+
+            case 0:
+                imageView.setImageResource(R.drawable.ic_status_ok_24dp);
+                break;
+
+            case 1:
+                imageView.setImageResource(R.drawable.ic_status_pr_24dp);
+                break;
+
+            default:
+                imageView.setImageResource(R.drawable.ic_status_pr_24dp);
+                break;
+        }
     }
 
     protected class ServiceViewHolder extends RecyclerView.ViewHolder{
@@ -154,60 +196,6 @@ public class ServiceAdapter extends RecyclerView.Adapter {
 
         public void setStatus(ImageView status) {
             this.status = status;
-        }
-    }
-
-    public class TaskGetPerson extends AsyncTask<ServiceViewHolder, Void, Integer> {
-
-        ServiceViewHolder holder;
-        public TaskGetPerson(ServiceViewHolder holder){
-            this.holder = holder;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            m_AccessServiceAPI = new AccessServiceAPI();
-        }
-
-        @Override
-        protected Integer doInBackground(ServiceViewHolder... params) {
-            Map<String, String> postParam = new HashMap<>();
-            postParam.put("action", "getpersonbyid");
-            postParam.put("id", service.getIdResp()+"");
-
-            try {
-                String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(prefs.getString("webservice", ""), postParam);
-
-                JSONArray jsonArray = null;
-                try {
-                    jsonArray = new JSONArray(jsonString);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
-                if (jsonArray != null) {
-                    JSONObject jsonObject = new JSONObject(jsonArray.getString(0));
-                    person = new Person(jsonObject);
-                }
-
-                return Util.RESULT_SUCCESS;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return Util.RESULT_ERROR;
-            }
-
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-            super.onPostExecute(integer);
-
-            holder.getResponsible().setText(person.getName());
-            holder.getPatrimony().setText(service.getPatrimony());
-            Util.setIconByType(context,holder.getIcon(), service.getType());
-            Util.setStatusIcon(context,holder.getStatus(), service.getActive());
         }
     }
 }

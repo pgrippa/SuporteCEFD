@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group>
-        <item
-            android:id="@+id/nav_adduser"
-            android:icon="@drawable/ic_person_add_24dp"
-            android:title="@string/t_cadastrar_usuario" />
-    </group>
+    <item android:title="Gerenciamento"
+        android:id="@+id/nav_g">
+        <menu>
+            <item
+                android:id="@+id/nav_adduser"
+                android:icon="@drawable/ic_person_add_24dp"
+                android:title="@string/t_cadastrar_usuario" />
+        </menu>
+
+    </item>
 
     <group>
         <item

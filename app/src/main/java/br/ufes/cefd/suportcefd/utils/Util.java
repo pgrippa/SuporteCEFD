@@ -3,13 +3,21 @@ package br.ufes.cefd.suportcefd.utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.widget.ImageView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import br.ufes.cefd.suportcefd.R;
 import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
+import br.ufes.cefd.suportcefd.webservice.AccessServiceAPI;
 
 /**
  * Created by pgrippa on 16/09/16.

@@ -105,6 +105,11 @@ public class Tasks extends Activity {
         new TaskGetServicesAdmin().execute();
     }
 
+    public void execGetServicesUser(RecyclerView recyclerView) {
+        this.recyclerView = recyclerView;
+        new TaskGetServicesUser().execute();
+    }
+
     public void execUpdateService(Service s, Person p) {
         this.s = s;
         this.p = p;
@@ -335,6 +340,52 @@ public class Tasks extends Activity {
         }
     }
 
+    public class TaskGetServicesUser extends AsyncTask<String, Void, Integer> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            m_AccessServiceAPI = new AccessServiceAPI();
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            Map<String, String> postParam = new HashMap<>();
+
+            postParam.put("action", "getpersonallservices");
+            postParam.put("personid", p.getId()+"");
+
+
+            try {
+                String jsonString = m_AccessServiceAPI.getJSONStringWithParam_POST(prefs.getString("webservice", ""), postParam);
+
+                JSONArray serviceJsonArray = null;
+
+                try {
+                    serviceJsonArray = new JSONArray(jsonString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return Util.RESULT_ERROR;
+                }
+
+                packServicesDAO(serviceJsonArray);
+
+                return Util.RESULT_SUCCESS;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return Util.RESULT_ERROR;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+
+            showServices(integer);
+        }
+    }
+
     public class TaskGetPersonServices extends AsyncTask<String, Void, Integer> {
 
 
@@ -476,20 +527,6 @@ public class Tasks extends Activity {
             if (integer == 0) {
                 Toast.makeText(context, "Serviço atualizado com sucesso!", Toast.LENGTH_SHORT).show();
 
-                /*SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                boolean sendmail = prefs.getBoolean("sendemail",false);
-                if(sendmail) {
-
-                    ArrayList<String> list = new ArrayList<>();
-
-                    list.add(p.getEmail());
-
-                    String msg = Util.getMessage(s, p);
-
-                    new SendMailTask(Tasks.this).execute(Util.FROMEMAIL,
-                            Util.FROMPASSWORD, list, context.getString(R.string.ns_suject,s.getId()), msg);
-                }*/
-
             } else {
                 Toast.makeText(context, "Ocorreu um erro ao atualizar o serviço!", Toast.LENGTH_SHORT).show();
             }
@@ -612,10 +649,15 @@ public class Tasks extends Activity {
     }
 
     private void showServices(Integer integer) {
-        showProgress(false);
 
+        showProgress(false);
         if (serviceList == null) {
             serviceList = new ArrayList<>();
+        }
+        if(integer !=-1) {
+            personList = new ArrayList<>();
+            personList.add(p);
+            recyclerView.setAdapter(new ServiceAdapter(context, serviceList, personList));
         }
 
         TextView empty = (TextView) v;
@@ -624,15 +666,16 @@ public class Tasks extends Activity {
         } else {
             empty.setVisibility(View.GONE);
         }
-
-        recyclerView.setAdapter(new ServiceAdapter(context, serviceList, p));
     }
 
     private void showServicesAdmin(Integer integer) {
         showProgress(false);
-
         if (serviceList == null) {
             serviceList = new ArrayList<>();
+        }
+        if(integer!=-1) {
+
+            recyclerView.setAdapter(new ServiceAdapter(context, serviceList, personList));
         }
 
         TextView empty = (TextView) v;
@@ -641,8 +684,6 @@ public class Tasks extends Activity {
         } else {
             empty.setVisibility(View.GONE);
         }
-
-        recyclerView.setAdapter(new ServiceAdapter(context, serviceList, personList));
     }
 
     public void setProgressBar(View mProgress) {

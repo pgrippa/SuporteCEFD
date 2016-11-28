@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         if(person.getType().equals("user")){
-            MenuItem item = navigationView.getMenu().findItem(R.id.nav_adduser);
+            MenuItem item = navigationView.getMenu().findItem(R.id.nav_g);
             item.setVisible(false);
         }
 
@@ -144,6 +144,7 @@ public class MainActivity extends AppCompatActivity
                 SharedPreferences prefs = getSharedPreferences(getString(R.string.sp_user), Context.MODE_PRIVATE);
                 SharedPreferences.Editor ed = prefs.edit();
                 ed.putBoolean(getString(R.string.sp_logged),false);
+                ed.putBoolean("loaded",false);
                 ed.commit();
                 Intent it = new Intent(MainActivity.this,LoginActivity.class);
                 startActivity(it);

@@ -62,7 +62,7 @@ public class List extends AppCompatActivity {
         if(person.getType().equals("admin")){
             loadAdminDAO(getString(R.string.ls_active));
         }else{
-            loadServices(getString(R.string.ls_active));
+            loadUserDAO(getString(R.string.ls_active));
         }
 
     }
@@ -186,18 +186,20 @@ public class List extends AppCompatActivity {
 
     private void loadAdminDAO(String filter) {
         ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
-        PersonDAO personDAO = new PersonDAO(this);
+        PersonDAO personDAO = new PersonDAO(getApplicationContext());
 
         SharedPreferences.Editor ed = prefs.edit();
         loaded = prefs.getBoolean("loaded",false);
         if(loaded) {
             adapter = (ServiceAdapter) recyclerView.getAdapter();
+            ArrayList<Person> personList = personDAO.getPersonList();
             if(adapter == null){
-                ArrayList<Person> personList = personDAO.getPersonList();
+                personList.add(person);
                 adapter = new ServiceAdapter(this, new ArrayList<Service>(), personList);
                 recyclerView.setAdapter(adapter);
             }
 
+            adapter.setPersonList(personList);
             if (filter.equals(getString(R.string.ls_active))) {
                 serviceList = serviceDAO.getActiveServices(true);
 
@@ -218,23 +220,80 @@ public class List extends AppCompatActivity {
 
             empty = (TextView) findViewById(R.id.t_empty);
             if (serviceList == null || serviceList.isEmpty()) {
-                //empty.setText(getString(R.string.t_empty));
                 empty.setVisibility(View.VISIBLE);
             } else {
-                //empty.setText("");
                 empty.setVisibility(View.GONE);
             }
 
             if (adapter != null) {
                 adapter.swap(serviceList);
             }
+            recyclerView.setAdapter(adapter);
 
         }else{
             empty = (TextView) findViewById(R.id.t_empty);
-            tasks = new Tasks(this, empty, null);
+            tasks = new Tasks(this, empty, person);
             tasks.setProgressBar(mProgressView);
             tasks.showProgress(true);
             tasks.execGetServicesAdmin(recyclerView);
+            ed.putBoolean("loaded",true);
+            ed.commit();
+        }
+    }
+
+    private void loadUserDAO(String filter) {
+        ServiceDAO serviceDAO = new ServiceDAO(getApplicationContext());
+        PersonDAO personDAO = new PersonDAO(getApplicationContext());
+
+        SharedPreferences.Editor ed = prefs.edit();
+        loaded = prefs.getBoolean("loaded",false);
+        if(loaded) {
+            adapter = (ServiceAdapter) recyclerView.getAdapter();
+            ArrayList<Person> personList = new ArrayList<>();
+            personList.add(person);
+            if(adapter == null){
+                adapter = new ServiceAdapter(this, new ArrayList<Service>(), personList);
+                recyclerView.setAdapter(adapter);
+            }
+
+            adapter.setPersonList(personList);
+
+            if (filter.equals(getString(R.string.ls_active))) {
+                serviceList = serviceDAO.getPersonServices(person.getId(),true);
+
+                toolbar.setTitle(getString(R.string.lst_active));
+
+            } else if (filter.equals(getString(R.string.ls_inactive))) {
+                serviceList = serviceDAO.getPersonServices(person.getId(),false);
+
+                toolbar.setTitle(getString(R.string.lst_inactive));
+            } else {
+                serviceList = serviceDAO.getPersonAllServices(person.getId());
+                toolbar.setTitle(getString(R.string.lst_all));
+            }
+
+            if (serviceList == null) {
+                serviceList = new ArrayList<>();
+            }
+
+            empty = (TextView) findViewById(R.id.t_empty);
+            if (serviceList == null || serviceList.isEmpty()) {
+                empty.setVisibility(View.VISIBLE);
+            } else {
+                empty.setVisibility(View.GONE);
+            }
+
+            if (adapter != null) {
+                adapter.swap(serviceList);
+            }
+            recyclerView.setAdapter(adapter);
+
+        }else{
+            empty = (TextView) findViewById(R.id.t_empty);
+            tasks = new Tasks(this, empty, person);
+            tasks.setProgressBar(mProgressView);
+            tasks.showProgress(true);
+            tasks.execGetServicesUser(recyclerView);
             ed.putBoolean("loaded",true);
             ed.commit();
         }
@@ -268,7 +327,7 @@ public class List extends AppCompatActivity {
                 if(person.getType().equals("admin")){
                     loadAdminDAO(getString(R.string.ls_active));
                 }else {
-                    loadServices(getString(R.string.ls_active));
+                    loadUserDAO(getString(R.string.ls_active));
                 }
             } else {
                 search(query);
@@ -308,7 +367,7 @@ public class List extends AppCompatActivity {
                     if(person.getType().equals("admin")) {
                         loadAdminDAO(getString(R.string.ls_active));
                     }else {
-                        loadServices(getString(R.string.ls_active));
+                        loadUserDAO(getString(R.string.ls_active));
                     }
                 }
 
@@ -362,7 +421,7 @@ public class List extends AppCompatActivity {
                 if(person.getType().equals("admin")) {
                     loadAdminDAO(getString(R.string.ls_all));
                 }else {
-                    loadServices(getString(R.string.ls_all));
+                    loadUserDAO(getString(R.string.ls_all));
                 }
                 break;
 
@@ -371,7 +430,7 @@ public class List extends AppCompatActivity {
                 if(person.getType().equals("admin")) {
                     loadAdminDAO(getString(R.string.ls_active));
                 }else {
-                    loadServices(getString(R.string.ls_active));
+                    loadUserDAO(getString(R.string.ls_active));
                 }
                 break;
 
@@ -380,7 +439,7 @@ public class List extends AppCompatActivity {
                 if(person.getType().equals("admin")) {
                     loadAdminDAO(getString(R.string.ls_inactive));
                 }else {
-                    loadServices(getString(R.string.ls_inactive));
+                    loadUserDAO(getString(R.string.ls_inactive));
                 }
                 break;
 
@@ -417,19 +476,19 @@ public class List extends AppCompatActivity {
                     if(person.getType().equals("admin")) {
                         loadAdminDAO(getString(R.string.ls_active));
                     }else {
-                        loadServices(getString(R.string.ls_active));
+                        loadUserDAO(getString(R.string.ls_active));
                     }
                 } else if (inactive.isChecked()) {
                     if(person.getType().equals("admin")) {
                         loadAdminDAO(getString(R.string.ls_inactive));
                     }else {
-                        loadServices(getString(R.string.ls_inactive));
+                        loadUserDAO(getString(R.string.ls_inactive));
                     }
                 } else {
                     if(person.getType().equals("admin")) {
                         loadAdminDAO(getString(R.string.ls_all));
                     }else {
-                        loadServices(getString(R.string.ls_all));
+                        loadUserDAO(getString(R.string.ls_all));
                     }
                 }
 

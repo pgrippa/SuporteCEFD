@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import br.ufes.cefd.suportcefd.R;
+import br.ufes.cefd.suportcefd.db.PersonDAO;
 import br.ufes.cefd.suportcefd.domain.Person;
 import br.ufes.cefd.suportcefd.domain.Service;
 import br.ufes.cefd.suportcefd.utils.Util;
@@ -97,9 +98,9 @@ public class NewService extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     ArrayAdapter<Person> adapter = (ArrayAdapter<Person>) responsible.getAdapter();
-                    auxPerson = adapter.getItem(position);
-                    telephone.setText(auxPerson.getTelephone());
-                    email.setText(auxPerson.getEmail());
+                    Person p1 = adapter.getItem(position);
+                    telephone.setText(p1.getTelephone());
+                    email.setText(p1.getEmail());
                 }
             });
         }
@@ -164,6 +165,8 @@ public class NewService extends AppCompatActivity {
 
         if(person.getType().equals("admin")){
 
+            PersonDAO dao = new PersonDAO(this);
+            auxPerson = dao.getPersonByEmail(email.getText().toString());
             if(auxPerson==null){
                 alertNewUser.show();
                 return;
@@ -194,10 +197,10 @@ public class NewService extends AppCompatActivity {
             public void onClick(DialogInterface arg0, int arg1) {
                 Intent it = new Intent(NewService.this, NewUser.class);
 
-                Person p1 = new Person(responsible.getText().toString(), telephone.getText().toString(),
+                auxPerson = new Person(responsible.getText().toString(), telephone.getText().toString(),
                         email.getText().toString(),"","");
 
-                it.putExtra("person",p1);
+                it.putExtra("person",auxPerson);
                 startActivityForResult(it, 10);
             }
         });
@@ -218,9 +221,9 @@ public class NewService extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Bundle b = data.getExtras();
                 String nemail = email.getText().toString();
-                if(b!=null){
+                /*if(b!=null){
                     nemail = data.getExtras().getString("email");
-                }
+                }*/
 
                 new TaskGetPerson().execute(nemail);
             }
